@@ -1,5 +1,9 @@
 2006-10-06  Michael Meeks  <michael.meeks@novell.com>
 
+	* Version 1.1.1
+
+2006-10-06  Michael Meeks  <michael.meeks@novell.com>
+
 	* src/Makefile.am: rename the binary, tweak some
 	strings.
 
