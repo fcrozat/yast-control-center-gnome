@@ -1,4 +1,4 @@
-AC_INIT([y2cc-gnome], [0.1.1], [])
+AC_INIT([yast2-control-center-gnome], [0.1.1], [])
 
 AC_CONFIG_SRCDIR([.])
 AC_CONFIG_HEADERS([config.h])
@@ -20,7 +20,7 @@ dnl Check that we meet the  dependencies
 dnl ==============================================
 AM_PATH_GLIB_2_0(2.8.0,,,gobject)
 
-PKG_CHECK_MODULES(CONTROL, libslab libpanelapplet-2.0 gnome-desktop-2.0 libgnomeui-2.0 libgnome-menu)
+PKG_CHECK_MODULES(CONTROL, libslab libgnomeui-2.0 libgnome-menu)
 AC_SUBST(CONTROL_CFLAGS)
 AC_SUBST(CONTROL_LIBS)
 

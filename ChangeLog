@@ -2,6 +2,8 @@
 
 	* Version 1.1.1
 
+	* src/control-center.c: prune bogus includes.
+
 2006-10-06  Michael Meeks  <michael.meeks@novell.com>
 
 	* src/Makefile.am: rename the binary, tweak some
