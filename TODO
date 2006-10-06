@@ -1,3 +1,10 @@
++ yast2-control-center-gnome
+	+ binary 'y2controlcenter-gnome'
+	+ rename everything from y2cc-gnome ...
+	+ /opt/gnome/share/applications/YaST-gnome.desktop
+
++ check stuff that uses 'menus' ...
+
 ** Problems:
     + Directory files
 	+ update 'Icon' in all of them ...

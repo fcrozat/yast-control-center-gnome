@@ -2,7 +2,7 @@
 X-SuSE-translate=true
 Name=YaST2 Control Center
 Icon=yast
-Exec=@BINDIR@/y2cc-gnome
+Exec=@BINDIR@/y2controlcenter-gnome
 Terminal=false
 Type=Application
 StartupNotify=true

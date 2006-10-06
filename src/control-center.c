@@ -76,7 +76,7 @@ int main (int argc, char *argv [])
     gboolean hidden = FALSE;
 
     // gnome_program_init clears the env variable that we depend on, so call this first
-    if(apss_already_running(argc, argv, &bonobo_app, "GNOME-NLD-Yast2"))
+    if(apss_already_running(argc, argv, &bonobo_app, "YaST-gnome"))
     {
         gnome_program_init("YaST2 Gnome Control Center", "0.1", LIBGNOMEUI_MODULE, argc, argv, NULL, NULL);
         gdk_notify_startup_complete();
@@ -102,7 +102,7 @@ int main (int argc, char *argv [])
 	theme = gtk_icon_theme_get_default();
 	gtk_icon_theme_prepend_search_path (theme, "/usr/share/YaST2/theme/NLD");
 
-    AppShellData * app_data = appshelldata_new("y2cc-gnome.menu", NULL, CONTROL_CENTER_PREFIX);
+    AppShellData * app_data = appshelldata_new("YaST-gnome.menu", NULL, CONTROL_CENTER_PREFIX, GTK_ICON_SIZE_LARGE_TOOLBAR);
     generate_categories(app_data);
     GSList * actions = get_actions_list();
     layout_shell(app_data, _("Filter"), _("Groups"), _("Common Tasks"), actions, handle_static_action_clicked);

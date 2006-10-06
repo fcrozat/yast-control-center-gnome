@@ -1,6 +1,6 @@
 INCLUDES = $(CONTROL_CFLAGS)
 
-bin_PROGRAMS = y2cc-gnome
+bin_PROGRAMS = y2controlcenter-gnome
 
-y2cc_gnome_SOURCES = control-center.c
-y2cc_gnome_LDADD = $(CONTROL_LIBS)
+y2controlcenter_gnome_SOURCES = control-center.c
+y2controlcenter_gnome_LDADD = $(CONTROL_LIBS)
