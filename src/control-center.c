@@ -67,6 +67,8 @@ int main (int argc, char *argv [])
     BonoboApplication * bonobo_app = NULL;
     gboolean hidden = FALSE;
 
+    gtk_init (&argc, &argv);
+
     // gnome_program_init clears the env variable that we depend on, so call this first
     if(apss_already_running(argc, argv, &bonobo_app, "YaST-gnome"))
     {

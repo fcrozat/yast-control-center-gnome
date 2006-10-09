@@ -1,6 +1,14 @@
-2006-10-06  Michael Meeks  <michael.meeks@novell.com>
+2006-10-09  Michael Meeks  <michael.meeks@novell.com>
 
 	* Version 1.1.1
+
+	* src/control-center.c (main): add gtk_init to
+	overcome console warnings wrt. display.
+
+	* etc/YaST-gnome.desktop.in: add missing categories
+	so we showup in the app browser, add Root auth bits.
+
+2006-10-06  Michael Meeks  <michael.meeks@novell.com>
 
 	* src/control-center.c: prune bogus includes.
 
