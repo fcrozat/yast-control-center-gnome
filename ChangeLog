@@ -1,3 +1,9 @@
+2007-01-26  Scott Reeves  <sreeves@novell.com>
+	* src/control-center.c:
+	Fix for BNC #236464 - duplicated items.
+	Fix for gnome.org #395133 - tasks launched twice.
+	Remove .desktop file now that yast2 launches us
+
 2006-10-30  Scott Reeves  <sreeves@novell.com>
 	* src/control-center.c:
 	Roll in latest updates from gnome-main-menu CC.

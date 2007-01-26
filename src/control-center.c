@@ -21,6 +21,7 @@ static GSList * get_actions_list();
 static GSList *
 get_actions_list ()
 {
+	GSList *l;
 	GSList *key_list;
 	GSList *actions_list = NULL;
 	AppAction *action;
@@ -32,12 +33,13 @@ get_actions_list ()
 		return NULL;
 	}
 
-	for (; key_list; key_list = key_list->next)
+	for (l = key_list; l != NULL; l = l->next)
 	{
-		gchar *entry = (gchar *) key_list->data;
+		gchar *entry = (gchar *) l->data;
+		gchar **temp;
 
 		action = g_new (AppAction, 1);
-		gchar **temp = g_strsplit (entry, CONTROL_CENTER_ACTIONS_SEPARATOR, 2);
+		temp = g_strsplit (entry, CONTROL_CENTER_ACTIONS_SEPARATOR, 2);
 		action->name = g_strdup (temp[0]);
 		if ((action->item = load_desktop_item_from_unknown (temp[1])) == NULL)
 		{
@@ -45,19 +47,23 @@ get_actions_list ()
 		}
 		else
 		{
-			actions_list = g_slist_append (actions_list, action);
+			actions_list = g_slist_prepend (actions_list, action);
 		}
 		g_strfreev (temp);
 		g_free (entry);
 	}
 
 	g_slist_free (key_list);
-	return actions_list;
+
+	return g_slist_reverse (actions_list);
 }
 
 void
 handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data)
 {
+	if (event->type == TILE_EVENT_ACTIVATED_DOUBLE_CLICK)
+		return;
+	
 	gchar *temp;
 
 	AppShellData *app_data = (AppShellData *) data;
@@ -68,6 +74,14 @@ handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data)
 	temp = g_strdup_printf("%s%s", app_data->gconf_prefix, EXIT_SHELL_ON_STATIC_ACTION);
 	if (get_slab_gconf_bool(temp))
 		gtk_main_quit ();
+	/* Use this block instead of above line as soon as we move to 1/2007 version of gnome-main-menu
+	{
+		if (app_data->exit_on_close)
+			gtk_main_quit ();
+		else
+			hide_shell (app_data);
+	}
+	*/
 	g_free (temp);
 }
 
@@ -77,6 +91,9 @@ main (int argc, char *argv[])
 	BonoboApplication *bonobo_app = NULL;
 	gboolean hidden = FALSE;
 	gchar * startup_id;
+	AppShellData *app_data;
+	GSList *actions;
+	GnomeProgram *program;
 
 #ifdef ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
@@ -97,7 +114,7 @@ main (int argc, char *argv[])
 	}
 
 	startup_id = g_strdup (g_getenv (DESKTOP_STARTUP_ID));
-	gnome_program_init ("YaST2 Gnome Control Center", "0.1", LIBGNOMEUI_MODULE,
+	program = gnome_program_init ("YaST2 GNOME Control Center", "0.1", LIBGNOMEUI_MODULE,
 		argc, argv, NULL, NULL);
 
 	if (apss_already_running (argc, argv, &bonobo_app, "YaST-gnome", startup_id))
@@ -112,11 +129,11 @@ main (int argc, char *argv[])
 	theme = gtk_icon_theme_get_default();
 	gtk_icon_theme_prepend_search_path (theme, "/usr/share/YaST2/theme/NLD");
 
-	AppShellData *app_data = appshelldata_new (
+	app_data = appshelldata_new (
 		"YaST-gnome.menu", NULL, CONTROL_CENTER_PREFIX, GTK_ICON_SIZE_LARGE_TOOLBAR);
 	generate_categories (app_data);
 
-	GSList *actions = get_actions_list ();
+	actions = get_actions_list ();
 	layout_shell (app_data, _("Filter"), _("Groups"), _("Common Tasks"), actions,
 		handle_static_action_clicked);
 

@@ -9,6 +9,7 @@
   <DefaultDirectoryDirs/>
 
   <Directory>suse-y2cc-gnome.directory</Directory>
+  <OnlyUnallocated/>
   <Include>
     <Category>X-SuSE-YaST</Category>
   </Include>   
