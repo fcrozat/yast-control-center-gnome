@@ -7,7 +7,7 @@
 			<type>list</type>
 			<list_type>string</list_type>
 			<locale name="C">
-				<default>[Add a User;YaST2/users.desktop,Graphics Setup;YaST2/x11.desktop]</default>
+				<default>[]</default>
 				<short>Task names and associated .desktop files</short>
 				<long>The task name to be displayed in the y2cc-gnome (thus needing to be translated) followed by a ";" separator then the filename of an associated .desktop file to launch for that task.</long>
 			</locale>

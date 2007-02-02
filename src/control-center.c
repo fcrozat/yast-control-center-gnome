@@ -1,3 +1,23 @@
+/*
+ * This file is part of the Control Center.
+ *
+ * Copyright (c) 2006 Novell, Inc.
+ *
+ * The Control Center is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * The Control Center is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * the Control Center; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 #include "config.h"
 #include <string.h>
 #include <gtk/gtkicontheme.h>
@@ -10,8 +30,8 @@
 #include "app-shell-startup.h"
 #include "slab-gnome-util.h"
 
-void handle_static_action_clicked(Tile * tile, TileEvent * event, gpointer data);
-static GSList * get_actions_list();
+void handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data);
+static GSList *get_actions_list ();
 
 #define CONTROL_CENTER_PREFIX             "/desktop/gnome/applications/y2cc-gnome/cc_"
 #define CONTROL_CENTER_ACTIONS_LIST_KEY   (CONTROL_CENTER_PREFIX "actions_list")
@@ -73,15 +93,12 @@ handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data)
 
 	temp = g_strdup_printf("%s%s", app_data->gconf_prefix, EXIT_SHELL_ON_STATIC_ACTION);
 	if (get_slab_gconf_bool(temp))
-		gtk_main_quit ();
-	/* Use this block instead of above line as soon as we move to 1/2007 version of gnome-main-menu
 	{
 		if (app_data->exit_on_close)
 			gtk_main_quit ();
 		else
 			hide_shell (app_data);
 	}
-	*/
 	g_free (temp);
 }
 
@@ -129,8 +146,8 @@ main (int argc, char *argv[])
 	theme = gtk_icon_theme_get_default();
 	gtk_icon_theme_prepend_search_path (theme, "/usr/share/YaST2/theme/NLD");
 
-	app_data = appshelldata_new (
-		"YaST-gnome.menu", NULL, CONTROL_CENTER_PREFIX, GTK_ICON_SIZE_LARGE_TOOLBAR);
+	app_data = appshelldata_new ("YaST-gnome.menu", NULL, CONTROL_CENTER_PREFIX,
+		GTK_ICON_SIZE_LARGE_TOOLBAR, FALSE, TRUE);
 	generate_categories (app_data);
 
 	actions = get_actions_list ();
