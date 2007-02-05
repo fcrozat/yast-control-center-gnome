@@ -1,19 +1,12 @@
-AC_INIT([yast2-control-center-gnome], [0.1.1], [])
+## general configure.in.in
 
-AC_CONFIG_SRCDIR([.])
-AC_CONFIG_HEADERS([config.h])
+## initialize
+@YAST2-INIT-COMMON@
+@YAST2-INIT-PROGRAM@
 
-AM_INIT_AUTOMAKE([1.9 tar-ustar])
-AM_MAINTAINER_MODE
-
-AC_SUBST([ACLOCAL_AMFLAGS], ["\${ACLOCAL_FLAGS}"])
-
-GNOME_COMPILE_WARNINGS
-
-AC_ISC_POSIX
-AC_PROG_CC
-AC_STDC_HEADERS
-AM_PROG_LIBTOOL
+## some common checks
+@YAST2-CHECKS-COMMON@
+@YAST2-CHECKS-PROGRAM@
 
 dnl ==============================================
 dnl Check that we meet the  dependencies
@@ -32,12 +25,5 @@ fi
 
 AM_GCONF_SOURCE_2
 
-dnl ==============================================
-dnl End: Gconf
-dnl ==============================================
-
-AC_OUTPUT([
-Makefile
-etc/Makefile
-src/Makefile
-])
+## and generate the output
+@YAST2-OUTPUT@
