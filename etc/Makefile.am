@@ -1,3 +1,6 @@
+desktopdir       = $(datadir)/applications
+desktop_DATA     = YaST-gnome.desktop
+
 schemasdir   = @GCONF_SCHEMA_FILE_DIR@
 schemas_DATA = yast2-control-center-gnome.schemas
 
@@ -11,6 +14,9 @@ directory_DATA = $(wildcard yast-gnome-*.directory)
 
 NLD_YAST_THEME_DIR = /usr/share/YaST2/theme/NLD
 SL_YAST_THEME_DIR = /usr/share/YaST2/theme/SuSELinux
+
+$(desktop_DATA): $(desktop_DATA).in
+	sed -e "s|\@BINDIR\@|$(bindir)|" $< > $@
 
 $(schemas_DATA): $(schemas_DATA).in
 	sed -e "s|\@DATADIR\@|$(datadir)|g" $< > $@
@@ -36,6 +42,6 @@ install-data-local: link-hicolor
 		done \
 	fi
 
-EXTRA_DIST = $(schemas_DATA).in $(menu_DATA) $(directory_DATA) $(index_DATA)
+EXTRA_DIST = $(desktop_DATA).in $(schemas_DATA).in $(menu_DATA) $(directory_DATA) $(index_DATA)
 
-CLEANFILES = $(schemas_DATA)
+CLEANFILES = $(desktop_DATA) $(schemas_DATA)

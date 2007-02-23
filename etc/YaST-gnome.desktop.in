@@ -1,0 +1,15 @@
+[Desktop Entry]
+X-SuSE-translate=true
+#Name=YaST2 Control Center
+Name=YaST
+Icon=yast
+Exec=/sbin/yast2
+#Exec=@BINDIR@/y2controlcenter-gnome
+Terminal=false
+Type=Application
+StartupNotify=true
+Encoding=UTF-8
+Categories=GNOME;SystemSetup;X-SuSE-Core-System;X-SuSE-ControlCenter-System
+OnlyShowIn=GNOME;
+X-KDE-RootOnly=true
+X-KDE-SubstituteUID=true
