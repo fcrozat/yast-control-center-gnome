@@ -33,7 +33,7 @@
 void handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data);
 static GSList *get_actions_list ();
 
-#define CONTROL_CENTER_PREFIX             "/apps/y2cc-gnome/cc_"
+#define CONTROL_CENTER_PREFIX             "/desktop/gnome/applications/y2cc-gnome/cc_"
 #define CONTROL_CENTER_ACTIONS_LIST_KEY   (CONTROL_CENTER_PREFIX "actions_list")
 #define CONTROL_CENTER_ACTIONS_SEPARATOR  ";"
 #define EXIT_SHELL_ON_STATIC_ACTION       "exit_shell_on_static_action"
@@ -156,7 +156,7 @@ main (int argc, char *argv[])
 
 	g_signal_connect (bonobo_app, "new-instance", G_CALLBACK (apss_new_instance_cb), app_data);
 	create_main_window (app_data, widget_theming_name, _("YaST2 Control Center"),
-		"y2cc-gnome", 975, 600, hidden);
+		"gnome-control-center", 975, 600, hidden);
 
 	if (bonobo_app)
 		bonobo_object_unref (bonobo_app);

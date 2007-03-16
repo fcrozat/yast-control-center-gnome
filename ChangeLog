@@ -1,3 +1,12 @@
+2007-03-16  Scott Reeves  <sreeves@novell.com>
+	* etc/YaST-gnome.menu
+	* etc/yast2-control-center-gnome.schemas.in
+	* /src/control-center.c:
+	Fix for 249717 - change icon
+	Fix for 252799 - merge in add on menus
+	Use correct .directory names in menu file
+	schema back to /desktop prefix - main-menu checks for some of it there.
+
 2007-03-12  Scott Reeves  <sreeves@novell.com>
 	* /src/control-center.c:
 	Fix for 250415 - allow different theming for the cc shell
