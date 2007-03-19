@@ -63,6 +63,13 @@
 		</Include>
 	</Menu>
 	<Menu>
+		<Name>Virtualization</Name>
+		<Directory>yast-gnome-virtualization.directory</Directory>
+		<Include>
+			<Category>X-SuSE-YaST-Virtualization</Category>
+		</Include>
+	</Menu>
+	<Menu>
 		<Name>Misc</Name>
 		<Directory>yast-gnome-misc.directory</Directory>
 		<Include>
