@@ -18,6 +18,7 @@
  * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#define ENABLE_NLS 1
 #include "config.h"
 #include <string.h>
 #include <gtk/gtkicontheme.h>
@@ -37,6 +38,9 @@ static GSList *get_actions_list ();
 #define CONTROL_CENTER_ACTIONS_LIST_KEY   (CONTROL_CENTER_PREFIX "actions_list")
 #define CONTROL_CENTER_ACTIONS_SEPARATOR  ";"
 #define EXIT_SHELL_ON_STATIC_ACTION       "exit_shell_on_static_action"
+
+#define GNOME_MAIN_MENU_PACKAGE "gnome-main-menu"
+#define YAST_CC_PACKAGE "control-center"
 
 static GSList *
 get_actions_list ()
@@ -112,11 +116,11 @@ main (int argc, char *argv[])
 	GnomeProgram *program;
 	const gchar *widget_theming_name = "y2ccg-control-center";
 
-#ifdef ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
-#endif
+	bindtextdomain (GNOME_MAIN_MENU_PACKAGE, "/opt/gnome/share/locale");
+	bind_textdomain_codeset (GNOME_MAIN_MENU_PACKAGE, "UTF-8");
+	bindtextdomain (YAST_CC_PACKAGE, "/usr/share/YaST2/locale");
+	bind_textdomain_codeset (YAST_CC_PACKAGE, "UTF-8");
+	textdomain (GNOME_MAIN_MENU_PACKAGE);
 
 	if (argc > 1)
 	{
@@ -155,8 +159,10 @@ main (int argc, char *argv[])
 		handle_static_action_clicked);
 
 	g_signal_connect (bonobo_app, "new-instance", G_CALLBACK (apss_new_instance_cb), app_data);
+	textdomain (YAST_CC_PACKAGE);
 	create_main_window (app_data, widget_theming_name, _("YaST2 Control Center"),
 		"gnome-control-center", 975, 600, hidden);
+	textdomain (GNOME_MAIN_MENU_PACKAGE);
 
 	if (bonobo_app)
 		bonobo_object_unref (bonobo_app);

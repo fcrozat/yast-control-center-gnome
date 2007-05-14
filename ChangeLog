@@ -1,3 +1,7 @@
+2007-05-14  Scott Reeves  <sreeves@novell.com>
+	Fix for 259542 - not translated
+	Fix for 245970 - install into y2bindir.
+
 2007-03-19  Scott Reeves  <sreeves@novell.com>
 	* etc/YaST-gnome.menu
 	* etc/yast-gnome-virtualization.directory:
