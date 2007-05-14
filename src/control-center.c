@@ -49,7 +49,6 @@ get_actions_list ()
 	key_list = get_slab_gconf_slist (CONTROL_CENTER_ACTIONS_LIST_KEY);
 	if (!key_list)
 	{
-		g_warning (_("key not found [%s]\n"), CONTROL_CENTER_ACTIONS_LIST_KEY);
 		return NULL;
 	}
 
@@ -111,6 +110,7 @@ main (int argc, char *argv[])
 	AppShellData *app_data;
 	GSList *actions;
 	GnomeProgram *program;
+	const gchar *widget_theming_name = "y2ccg-control-center";
 
 #ifdef ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
@@ -155,8 +155,8 @@ main (int argc, char *argv[])
 		handle_static_action_clicked);
 
 	g_signal_connect (bonobo_app, "new-instance", G_CALLBACK (apss_new_instance_cb), app_data);
-	create_main_window (app_data, "MyControlCenter", _("Control Center"),
-		"y2cc-gnome", 975, 600, hidden);
+	create_main_window (app_data, widget_theming_name, _("YaST2 Control Center"),
+		"gnome-control-center", 975, 600, hidden);
 
 	if (bonobo_app)
 		bonobo_object_unref (bonobo_app);

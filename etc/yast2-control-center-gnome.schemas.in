@@ -6,10 +6,10 @@
 			<owner>y2cc-gnome</owner>
 			<type>list</type>
 			<list_type>string</list_type>
+			<default>[]</default>
 			<locale name="C">
-				<default>[]</default>
 				<short>Task names and associated .desktop files</short>
-				<long>The task name to be displayed in the y2cc-gnome (thus needing to be translated) followed by a ";" separator then the filename of an associated .desktop file to launch for that task.</long>
+				<long>The task name to be displayed in the control-center (thus needing to be translated) followed by a ";" separator then the filename of an associated .desktop file to launch for that task.</long>
 			</locale>
 		</schema>
 		<schema>
@@ -19,8 +19,8 @@
 			<type>bool</type>
 			<default>false</default>
 			<locale name="C">
-				<short>Close the y2cc-gnome when a task is activated</short>
-				<long>if true, the y2cc-gnome will close when a "Common Task" is activated</long>
+				<short>Close the control-center when a task is activated</short>
+				<long>if true, the control-center will close when a "Common Task" is activated</long>
 			</locale>
 		</schema>
 		<schema>

@@ -2,72 +2,79 @@
  "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
 
 <Menu>
-  <Name>YaST2</Name>
-
-  <!-- Read standard .directory and .desktop file locations -->
-  <DefaultAppDirs/>
-  <DefaultDirectoryDirs/>
-
-  <Directory>suse-y2cc-gnome.directory</Directory>
-  <OnlyUnallocated/>
-  <Include>
-    <Category>X-SuSE-YaST</Category>
-  </Include>   
+	<Name>YaST2</Name>
+	
+	<!-- Read standard .directory and .desktop file locations -->
+	<DefaultAppDirs/>
+	<DefaultDirectoryDirs/>
+	
+	<Directory>yast-gnome.directory</Directory>
+	<OnlyUnallocated/>
+	<Include>
+		<Category>X-SuSE-YaST</Category>
+	</Include>   
 	<Menu>
 		<Name>Software</Name>
-		<Directory>suse-y2cc-gnome-software.directory</Directory>
+		<Directory>yast-gnome-software.directory</Directory>
 		<Include>
 			<Category>X-SuSE-YaST-Software</Category>
 		</Include>
 	</Menu>
 	<Menu>
 		<Name>Hardware</Name>
-		<Directory>suse-y2cc-gnome-hardware.directory</Directory>
+		<Directory>yast-gnome-hardware.directory</Directory>
 		<Include>
 			<Category>X-SuSE-YaST-Hardware</Category>
 		</Include>
 	</Menu>
 	<Menu>
 		<Name>System</Name>
-		<Directory>suse-y2cc-gnome-system.directory</Directory>
+		<Directory>yast-gnome-system.directory</Directory>
 		<Include>
 			<Category>X-SuSE-YaST-System</Category>
 		</Include>
 	</Menu>
 	<Menu>
 		<Name>Network Devices</Name>
-		<Directory>suse-y2cc-gnome-net-devices.directory</Directory>
+		<Directory>yast-gnome-net-devices.directory</Directory>
 		<Include>
 			<Category>X-SuSE-YaST-Network</Category>
 		</Include>
 	</Menu>
 	<Menu>
 		<Name>Network Services</Name>
-		<Directory>suse-y2cc-gnome-net-services.directory</Directory>
+		<Directory>yast-gnome-net-services.directory</Directory>
 		<Include>
 			<Category>X-SuSE-YaST-Net_advanced</Category>
 		</Include>
 	</Menu>
 	<Menu>
 		<Name>AppArmor</Name>
-		<Directory>suse-y2cc-gnome-apparmor.directory</Directory>
+		<Directory>yast-gnome-apparmor.directory</Directory>
 		<Include>
 			<Category>X-SuSE-YaST-AppArmor</Category>
 		</Include>
 	</Menu>
 	<Menu>
 		<Name>Security</Name>
-		<Directory>suse-y2cc-gnome-security.directory</Directory>
+		<Directory>yast-gnome-security.directory</Directory>
 		<Include>
 			<Category>X-SuSE-YaST-Security</Category>
 		</Include>
 	</Menu>
 	<Menu>
+		<Name>Virtualization</Name>
+		<Directory>yast-gnome-virtualization.directory</Directory>
+		<Include>
+			<Category>X-SuSE-YaST-Virtualization</Category>
+		</Include>
+	</Menu>
+	<Menu>
 		<Name>Misc</Name>
-		<Directory>suse-y2cc-gnome-misc.directory</Directory>
+		<Directory>yast-gnome-misc.directory</Directory>
 		<Include>
 			<Category>X-SuSE-YaST-Misc</Category>
 		</Include>
 	</Menu>
-
+	<DefaultMergeDirs/>
 </Menu>
