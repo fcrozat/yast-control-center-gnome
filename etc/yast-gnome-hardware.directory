@@ -2,7 +2,6 @@
 Type=Directory
 Icon=yast-hardware
 
-X-SuSE-translate=true
 X-SuSE-DocTeamID=ycc_hardware
 
 Name=Hardware

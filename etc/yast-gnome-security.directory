@@ -2,7 +2,6 @@
 Type=Directory
 Icon=yast-security
 
-X-SuSE-translate=true
 X-SuSE-DocTeamID=ycc_security
 
 Name=Security and Users

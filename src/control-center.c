@@ -161,7 +161,7 @@ main (int argc, char *argv[])
 	g_signal_connect (bonobo_app, "new-instance", G_CALLBACK (apss_new_instance_cb), app_data);
 	textdomain (YAST_CC_PACKAGE);
 	create_main_window (app_data, widget_theming_name, _("YaST2 Control Center"),
-		"gnome-control-center", 975, 600, hidden);
+		"yast-shell", 975, 600, hidden);
 	textdomain (GNOME_MAIN_MENU_PACKAGE);
 
 	if (bonobo_app)

@@ -2,7 +2,6 @@
 Type=Directory
 Icon=apparmor_app_armor
 
-X-SuSE-translate=true
 X-SuSE-DocTeamID=ycc_apparmor
 
 Name=Novell AppArmor

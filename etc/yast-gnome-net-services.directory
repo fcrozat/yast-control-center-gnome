@@ -2,7 +2,6 @@
 Type=Directory
 Icon=yast-network_services
 
-X-SuSE-translate=true
 X-SuSE-DocTeamID=ycc_network_services
 
 Name=Network Services
