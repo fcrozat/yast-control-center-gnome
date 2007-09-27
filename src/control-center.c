@@ -116,7 +116,8 @@ main (int argc, char *argv[])
 	GnomeProgram *program;
 	const gchar *widget_theming_name = "y2ccg-control-center";
 
-	bindtextdomain (GNOME_MAIN_MENU_PACKAGE, "/opt/gnome/share/locale");
+	//Fixme - do not hardcode the path - generate and -D it in the Makefile
+	bindtextdomain (GNOME_MAIN_MENU_PACKAGE, "/usr/share/locale");
 	bind_textdomain_codeset (GNOME_MAIN_MENU_PACKAGE, "UTF-8");
 	bindtextdomain (YAST_CC_PACKAGE, "/usr/share/YaST2/locale");
 	bind_textdomain_codeset (YAST_CC_PACKAGE, "UTF-8");
