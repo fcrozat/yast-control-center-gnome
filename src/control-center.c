@@ -123,16 +123,15 @@ main (int argc, char *argv[])
 	bind_textdomain_codeset (YAST_CC_PACKAGE, "UTF-8");
 	textdomain (GNOME_MAIN_MENU_PACKAGE);
 
-	if (argc > 1)
-	{
-		if (argc != 2 || strcmp ("-h", argv[1]))
-		{
-			printf ("Usage - y2controlcenter-gnome [-h]\n");
-			printf ("Options: -h : hide on start\n");
-			printf ("\tUseful if you want to autostart the control-center singleton so it can get all it's slow loading done\n");
-			exit (1);
-		}
-		hidden = TRUE;
+	if (argc > 1) {
+        if (!g_ascii_strcasecmp (argv[1], "-h"))
+            hidden = TRUE;
+        else if (!g_ascii_strcasecmp (argv[1], "--help")) {
+            printf ("Usage - y2controlcenter-gnome [-h] [--help]\n");
+            printf ("Options: -h : hide on start\n");
+            printf ("\tUseful if you want to autostart the control-center singleton so it can get all it's slow loading done\n");
+            exit (1);
+        }
 	}
 
 	startup_id = g_strdup (g_getenv (DESKTOP_STARTUP_ID));

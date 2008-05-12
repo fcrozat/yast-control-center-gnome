@@ -1,3 +1,12 @@
+2008-05-12  Michael Meeks  <michael.meeks@novell.com>
+
+	* Version 2.13.3
+
+	* aclocal.m4: remove auto-generated file.
+
+	* src/control-center.c (main): tolerate unknown
+	arguments, like '-S' silently: 389069
+
 2007-09-27  Scott Reeves  <sreeves@novell.com>
 	Fix for 328615 - untranslated because of /opt/gnome to /usr
 
