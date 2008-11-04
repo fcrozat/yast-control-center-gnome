@@ -5,27 +5,4 @@ Icon=yast-security
 X-SuSE-DocTeamID=ycc_security
 
 Name=Security and Users
-Name[cs]=Bezpečnost a uživatelé
-Name[bg]=Сигурност и потребители
-Name[de]=Sicherheit und Benutzer
-Name[el]=Ασφάλεια και Χρήστες
-Name[es]=Seguridad y usuarios
-Name[fi]=Tietoturva ja käyttäjät
-Name[fr]=Sécurité et Utilisateurs
-Name[hu]=Biztonság és felhasználók
-Name[it]=Sicurezza e utenti
-Name[ja]=セキュリティとユーザ
-Name[km]=សុវត្ថិភាព និង អ្នក​ប្រើ
-Name[nb]=Sikkerhet og brukere
-Name[nl]=Beveiliging en gebruikers
-Name[pa]=ਸੁਰੱਖਿਆ ਅਤੇ ਉਪਭੋਗੀ
-Name[pl]=Zabezpieczenia i użytkownicy
-Name[pt]=Segurança e Utilizadores
-Name[pt_BR]=Segurança e Usuários
-Name[ru]=Пользователи и безопасность
-Name[sk]=Bezpečnosť a používatelia
-Name[sv]=Säkerhet och användare
-Name[uk]=Безпека і користувачі
-Name[zh_CN]=安全和用户
-Name[zh_TW]=保全性與使用者
 

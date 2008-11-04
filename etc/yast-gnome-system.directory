@@ -5,23 +5,4 @@ Icon=yast-system
 X-SuSE-DocTeamID=ycc_system
 
 Name=System
-Name[cs]=Systém
-Name[bg]=Система
-Name[el]=Σύστημα
-Name[es]=Sistema
-Name[fi]=Järjestelmä
-Name[fr]=Système
-Name[hu]=Rendszer
-Name[it]=Sistema
-Name[ja]=システム
-Name[km]=ប្រព័ន្ធ
-Name[nl]=Systeem
-Name[pa]=ਸਿਸਟਮ
-Name[pt]=Sistema
-Name[pt_BR]=Sistema
-Name[ru]=Система
-Name[sk]=Systém
-Name[uk]=Система
-Name[zh_CN]=系统
-Name[zh_TW]=系統
 

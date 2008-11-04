@@ -5,28 +5,5 @@ Icon=yast-network_devices
 X-SuSE-DocTeamID=ycc_network_devices
 
 Name=Network Devices
-Name[cs]=Síťová zařízení
-Name[bg]=Мрежови устройства
-Name[de]=Netzwerkgeräte
-Name[el]=Συσκευές Δικτύου
-Name[es]=Dispositivos de red
-Name[fi]=Verkkolaitteet
-Name[fr]=Périphériques réseau
-Name[hu]=Hálózati eszközök
-Name[it]=Dispositivi di rete
-Name[ja]=ネットワークデバイス
-Name[km]=ឧបករណ៍​បណ្ដាញ
-Name[nb]=Nettverksenheter
-Name[nl]=Netwerkapparaten
-Name[pa]=ਨੈੱਟਵਰਕ ਜੰਤਰ
-Name[pl]=Urządzenia sieciowe
-Name[pt]=Dispositivos de Rede
-Name[pt_BR]=Dispositivos de Rede
-Name[ru]=Сетевые устройства
-Name[sk]=Sieťové zariadenia
-Name[sv]=Nätverksenheter
-Name[uk]=Мережні пристрої
-Name[zh_CN]=网络设备
-Name[zh_TW]=網路裝置
 
 

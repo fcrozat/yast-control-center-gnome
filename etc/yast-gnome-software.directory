@@ -5,22 +5,5 @@ Icon=yast-software
 X-SuSE-DocTeamID=ycc_software
 
 Name=Software
-Name[cs]=Software
-Name[bg]=Софтуер
-Name[el]=Λογισμικό
-Name[fi]=Ohjelmisto
-Name[fr]=Logiciels
-Name[hu]=Szoftver
-Name[ja]=ソフトウェア
-Name[km]=ផ្នែកទន់
-Name[nb]=Programvare
-Name[pa]=ਸਾਫਟਵੇਅਰ
-Name[pl]=Oprogramowanie
-Name[pt]=Programas
-Name[ru]=Программное обеспечение
-Name[sv]=Mjukvara
-Name[uk]=Програмне забезпечення
-Name[zh_CN]=软件
-Name[zh_TW]=軟體
 
 
