@@ -1,3 +1,10 @@
+2009-01-31  Vincent Untz  <vuntz@gnome.org>
+
+	* src/control-center.c: (main): force not using the default handler for
+	gconf errors. libgnomeui sets one, and when a program is run under "su"
+	(not "su -"), we get gconf errors. And this program is often run under
+	"su", it seems :-)
+
 2008-05-12  Michael Meeks  <michael.meeks@novell.com>
 
 	* Version 2.13.3

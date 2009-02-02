@@ -21,6 +21,7 @@
 #define ENABLE_NLS 1
 #include "config.h"
 #include <string.h>
+#include <gconf/gconf-client.h>
 #include <gtk/gtkicontheme.h>
 #include <libgnome/gnome-desktop-item.h>
 #include <libgnomeui/libgnomeui.h>
@@ -114,6 +115,7 @@ main (int argc, char *argv[])
 	AppShellData *app_data;
 	GSList *actions;
 	GnomeProgram *program;
+	GConfClient *client;
 	const gchar *widget_theming_name = "y2ccg-control-center";
 
 	//Fixme - do not hardcode the path - generate and -D it in the Makefile
@@ -133,6 +135,17 @@ main (int argc, char *argv[])
             exit (1);
         }
 	}
+
+	/* Make gconf not handle the errors by default: libgnomeui installs an
+	 * handler that creates a dialog to display the error. Since this
+	 * application is mainly used as root, and since it can't connect to
+	 * gconf when "su" (not "su -") is used, we will likely get gconf
+	 * errors, and we want to ignore them. 
+	 * Also, keep a reference to the default gconf client we created to
+	 * make sure this property kept set. */
+	g_type_init ();
+	client = gconf_client_get_default ();
+	gconf_client_set_error_handling (client, GCONF_CLIENT_HANDLE_NONE);
 
 	startup_id = g_strdup (g_getenv (DESKTOP_STARTUP_ID));
 	program = gnome_program_init ("YaST2 GNOME Control Center", "0.1", LIBGNOMEUI_MODULE,
@@ -168,5 +181,7 @@ main (int argc, char *argv[])
 		bonobo_object_unref (bonobo_app);
 	bonobo_debug_shutdown ();
 	g_free (startup_id);
+	g_object_unref (client);
+
 	return 0;
 };
