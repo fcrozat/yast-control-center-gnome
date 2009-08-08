@@ -1,5 +1,20 @@
 2009-08-08  Vincent Untz  <vuntz@gnome.org>
 
+	Synchronize code with code from the shell in gnome-control-center
+	(although it's not committed there yet).
+	Highlights:
+	 - use goption
+	 - use unique instead of bonobo
+	 - no need for the gconf trick, since we don't use libgnomeui anymore
+	 - bigger icons
+	 - depends on latest libslab
+
+	* configure.in.in: depends on libslab >= 2.27.1
+	* src/Makefile.am: add a few defines
+	* src/control-center.c: big changes :-)
+
+2009-08-08  Vincent Untz  <vuntz@gnome.org>
+
 	* etc/yast2-control-center-gnome.schemas.in:
 	* src/control-center.c:
 	Move the gconf key to /apps/yast-control-center. They should never have

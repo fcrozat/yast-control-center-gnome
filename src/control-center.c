@@ -18,33 +18,28 @@
  * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#define ENABLE_NLS 1
 #include "config.h"
-#include <string.h>
-#include <gconf/gconf-client.h>
-#include <gtk/gtkicontheme.h>
-#include <libgnome/gnome-desktop-item.h>
-#include <libgnomeui/libgnomeui.h>
-#include <libgnome/gnome-i18n.h>
-#include <dirent.h>
 
-#include "app-shell.h"
-#include "app-shell-startup.h"
-#include "slab-gnome-util.h"
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <libgnome/gnome-desktop-item.h>
+#include <unique/unique.h>
+
+#include <libslab/slab.h>
 
 void handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data);
 static GSList *get_actions_list ();
 
 #define CONTROL_CENTER_PREFIX             "/apps/yast-control-center/cc_"
-#define CONTROL_CENTER_ACTIONS_LIST_KEY   (CONTROL_CENTER_PREFIX "actions_list")
+#define CONTROL_CENTER_ACTIONS_LIST_KEY   (CONTROL_CENTER_PREFIX  "actions_list")
 #define CONTROL_CENTER_ACTIONS_SEPARATOR  ";"
 #define EXIT_SHELL_ON_STATIC_ACTION       "exit_shell_on_static_action"
 
-#define GNOME_MAIN_MENU_PACKAGE "gnome-main-menu"
+#define GETTEXT_PACKAGE "gnome-control-center-2.0"
 #define YAST_CC_PACKAGE "control-center"
 
 static GSList *
-get_actions_list ()
+get_actions_list (void)
 {
 	GSList *l;
 	GSList *key_list;
@@ -54,6 +49,7 @@ get_actions_list ()
 	key_list = get_slab_gconf_slist (CONTROL_CENTER_ACTIONS_LIST_KEY);
 	if (!key_list)
 	{
+		g_warning (_("key not found [%s]\n"), CONTROL_CENTER_ACTIONS_LIST_KEY);
 		return NULL;
 	}
 
@@ -85,14 +81,13 @@ get_actions_list ()
 void
 handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data)
 {
-	if (event->type == TILE_EVENT_ACTIVATED_DOUBLE_CLICK)
-		return;
-	
 	gchar *temp;
-
 	AppShellData *app_data = (AppShellData *) data;
 	GnomeDesktopItem *item =
 		(GnomeDesktopItem *) g_object_get_data (G_OBJECT (tile), APP_ACTION_KEY);
+
+	if (event->type == TILE_EVENT_ACTIVATED_DOUBLE_CLICK)
+		return;
 	open_desktop_item_exec (item);
 
 	temp = g_strdup_printf("%s%s", app_data->gconf_prefix, EXIT_SHELL_ON_STATIC_ACTION);
@@ -106,57 +101,85 @@ handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data)
 	g_free (temp);
 }
 
+static UniqueResponse
+message_received_cb (UniqueApp         *app,
+		     UniqueCommand      command,
+		     UniqueMessageData *message,
+		     guint              time,
+		     gpointer           user_data)
+{
+	UniqueResponse  res;
+	AppShellData   *app_data = user_data;
+
+	switch (command) {
+	case UNIQUE_ACTIVATE:
+		/* move the main window to the screen that sent us the command */
+		gtk_window_set_screen (GTK_WINDOW (app_data->main_app),
+				       unique_message_data_get_screen (message));
+		if (!app_data->main_app_window_shown_once)
+			show_shell (app_data);
+
+		gtk_window_present_with_time (GTK_WINDOW (app_data->main_app),
+					      time);
+
+		gtk_widget_grab_focus (SLAB_SECTION (app_data->filter_section)->contents);
+
+		res = UNIQUE_RESPONSE_OK;
+		break;
+	default:
+		res = UNIQUE_RESPONSE_PASSTHROUGH;
+		break;
+	}
+
+	return res;
+}
+
 int
 main (int argc, char *argv[])
 {
-	BonoboApplication *bonobo_app = NULL;
 	gboolean hidden = FALSE;
-	gchar * startup_id;
+	UniqueApp *unique_app;
 	AppShellData *app_data;
 	GSList *actions;
-	GnomeProgram *program;
-	GConfClient *client;
-	const gchar *widget_theming_name = "y2ccg-control-center";
+	GError *error;
+	GOptionEntry options[] = {
+	  { "hide", 0, 0, G_OPTION_ARG_NONE, &hidden, N_("Hide on start (useful to preload the shell)"), NULL },
+	  { NULL }
+	};
 
-	//Fixme - do not hardcode the path - generate and -D it in the Makefile
-	bindtextdomain (GNOME_MAIN_MENU_PACKAGE, "/usr/share/locale");
-	bind_textdomain_codeset (GNOME_MAIN_MENU_PACKAGE, "UTF-8");
-	bindtextdomain (YAST_CC_PACKAGE, "/usr/share/YaST2/locale");
+#ifdef ENABLE_NLS
+	bindtextdomain (YAST_CC_PACKAGE, YASTLOCALEDIR);
 	bind_textdomain_codeset (YAST_CC_PACKAGE, "UTF-8");
-	textdomain (GNOME_MAIN_MENU_PACKAGE);
+	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
+	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+	textdomain (GETTEXT_PACKAGE);
+#endif
 
-	if (argc > 1) {
-        if (!g_ascii_strcasecmp (argv[1], "-h"))
-            hidden = TRUE;
-        else if (!g_ascii_strcasecmp (argv[1], "--help")) {
-            printf ("Usage - y2controlcenter-gnome [-h] [--help]\n");
-            printf ("Options: -h : hide on start\n");
-            printf ("\tUseful if you want to autostart the control-center singleton so it can get all it's slow loading done\n");
-            exit (1);
-        }
+	error = NULL;
+	if (!gtk_init_with_args (&argc, &argv,
+				 NULL, options, GETTEXT_PACKAGE, &error)) {
+		g_printerr ("%s\n", error->message);
+		g_error_free (error);
+		return 1;
 	}
 
-	/* Make gconf not handle the errors by default: libgnomeui installs an
-	 * handler that creates a dialog to display the error. Since this
-	 * application is mainly used as root, and since it can't connect to
-	 * gconf when "su" (not "su -") is used, we will likely get gconf
-	 * errors, and we want to ignore them. 
-	 * Also, keep a reference to the default gconf client we created to
-	 * make sure this property kept set. */
-	g_type_init ();
-	client = gconf_client_get_default ();
-	gconf_client_set_error_handling (client, GCONF_CLIENT_HANDLE_NONE);
+	/* we don't want to use dbus as a backend for unique, since we're
+	 * running as root */
+	g_setenv ("UNIQUE_BACKEND", "bacon", TRUE);
+	unique_app = unique_app_new ("org.opensuse.yast-control-center-gnome", NULL);
+	if (unique_app_is_running (unique_app)) {
+		int retval = 0;
 
-	startup_id = g_strdup (g_getenv (DESKTOP_STARTUP_ID));
-	program = gnome_program_init ("YaST2 GNOME Control Center", "0.1", LIBGNOMEUI_MODULE,
-		argc, argv, NULL, NULL);
+		if (!hidden) {
+			UniqueResponse response;
+			response = unique_app_send_message (unique_app,
+							    UNIQUE_ACTIVATE,
+							    NULL);
+			retval = (response != UNIQUE_RESPONSE_OK);
+		}
 
-	if (apss_already_running (argc, argv, &bonobo_app, "YaST-gnome", startup_id))
-	{
-		gdk_notify_startup_complete ();
-		bonobo_debug_shutdown ();
-		g_free (startup_id);
-		exit (1);
+		g_object_unref (unique_app);
+		return retval;
 	}
 
 	GtkIconTheme * theme;
@@ -164,24 +187,25 @@ main (int argc, char *argv[])
 	gtk_icon_theme_prepend_search_path (theme, "/usr/share/YaST2/theme/current");
 
 	app_data = appshelldata_new ("YaST-gnome.menu", NULL, CONTROL_CENTER_PREFIX,
-		GTK_ICON_SIZE_LARGE_TOOLBAR, FALSE, TRUE);
+				     GTK_ICON_SIZE_DND, FALSE, TRUE);
 	generate_categories (app_data);
 
 	actions = get_actions_list ();
 	layout_shell (app_data, _("Filter"), _("Groups"), _("Common Tasks"), actions,
 		handle_static_action_clicked);
 
-	g_signal_connect (bonobo_app, "new-instance", G_CALLBACK (apss_new_instance_cb), app_data);
 	textdomain (YAST_CC_PACKAGE);
-	create_main_window (app_data, widget_theming_name, _("YaST2 Control Center"),
+	create_main_window (app_data, "y2ccg-control-center", _("YaST2 Control Center"),
 		"yast", 975, 600, hidden);
-	textdomain (GNOME_MAIN_MENU_PACKAGE);
+	textdomain (GETTEXT_PACKAGE);
 
-	if (bonobo_app)
-		bonobo_object_unref (bonobo_app);
-	bonobo_debug_shutdown ();
-	g_free (startup_id);
-	g_object_unref (client);
+	unique_app_watch_window (unique_app, GTK_WINDOW (app_data->main_app));
+	g_signal_connect (unique_app, "message-received",
+			  G_CALLBACK (message_received_cb), app_data);
+
+	gtk_main ();
+
+	g_object_unref (unique_app);
 
 	return 0;
 };
