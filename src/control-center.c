@@ -35,7 +35,7 @@
 void handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data);
 static GSList *get_actions_list ();
 
-#define CONTROL_CENTER_PREFIX             "/desktop/gnome/applications/y2cc-gnome/cc_"
+#define CONTROL_CENTER_PREFIX             "/apps/yast-control-center/cc_"
 #define CONTROL_CENTER_ACTIONS_LIST_KEY   (CONTROL_CENTER_PREFIX "actions_list")
 #define CONTROL_CENTER_ACTIONS_SEPARATOR  ";"
 #define EXIT_SHELL_ON_STATIC_ACTION       "exit_shell_on_static_action"

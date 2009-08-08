@@ -1,5 +1,12 @@
 2009-08-08  Vincent Untz  <vuntz@gnome.org>
 
+	* etc/yast2-control-center-gnome.schemas.in:
+	* src/control-center.c:
+	Move the gconf key to /apps/yast-control-center. They should never have
+	been in /desktop/gnome/applications/y2cc-gnome
+
+2009-08-08  Vincent Untz  <vuntz@gnome.org>
+
 	* src/control-center.c: (main): use the "current" icon theme for yast,
 	instead of NLD.
 
