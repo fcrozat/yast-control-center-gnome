@@ -161,7 +161,7 @@ main (int argc, char *argv[])
 
 	GtkIconTheme * theme;
 	theme = gtk_icon_theme_get_default();
-	gtk_icon_theme_prepend_search_path (theme, "/usr/share/YaST2/theme/NLD");
+	gtk_icon_theme_prepend_search_path (theme, "/usr/share/YaST2/theme/current");
 
 	app_data = appshelldata_new ("YaST-gnome.menu", NULL, CONTROL_CENTER_PREFIX,
 		GTK_ICON_SIZE_LARGE_TOOLBAR, FALSE, TRUE);
