@@ -1,3 +1,11 @@
+2009-08-29  Vincent Untz  <vuntz@gnome.org>
+
+	Release 2.13.4
+	Note that there'll be no tag in svn, as apparently this module doesn't
+	use this. But this commit can be used to identify the release.
+
+	* VERSION: bump version
+
 2009-08-08  Vincent Untz  <vuntz@gnome.org>
 
 	Synchronize code with code from the shell in gnome-control-center
