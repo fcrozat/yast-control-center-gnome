@@ -70,6 +70,13 @@
 		</Include>
 	</Menu>
 	<Menu>
+		<Name>High Availability</Name>
+		<Directory>yast-gnome-ha.directory</Directory>
+		<Include>
+			<Category>X-SuSE-YaST-High_Availability</Category>
+		</Include>
+	</Menu>
+	<Menu>
 		<Name>Misc</Name>
 		<Directory>yast-gnome-misc.directory</Directory>
 		<Include>
