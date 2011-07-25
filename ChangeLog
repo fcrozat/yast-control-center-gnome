@@ -1,3 +1,22 @@
+2011-07-25  Vincent Untz  <vuntz@gnome.org>
+
+	Release 2.21.0
+
+	Completely rewrite: this is now a fork of the shell of
+	gnome-control-center in GNOME 3. The code should be kept in sync with
+	the upstream code; gnome-control-center.patch can be used as a basis for
+	this.
+
+	* VERSION: bump version.
+	* gnome-control-center.patch: patch that is applied to the
+	gnome-control-center shell to get the code in src/.
+	* configure.in.in: update dependencies (gconf-2.0, libslab, unique-1.0
+	are gone, we now depend on gio-unix-2.0, gtk+-3.0,
+	libgnome-control-center, libgnome-menu).
+	* etc/yast2-control-center-gnome.schemas.in, etc/Makefile.am: drop gconf
+	schema, since we don't use it anymore.
+	* src/*: everything is changed.
+
 2010-03-28  Cong Meng <cmeng@novell.com>
 
     Add a new category High Availability. (bnc #575787)

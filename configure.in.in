@@ -11,19 +11,17 @@
 dnl ==============================================
 dnl Check that we meet the  dependencies
 dnl ==============================================
-AM_PATH_GLIB_2_0(2.8.0,,,gobject)
+AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal, no)
 
-PKG_CHECK_MODULES(CONTROL, libslab >= 2.27.1 unique-1.0)
-AC_SUBST(CONTROL_CFLAGS)
-AC_SUBST(CONTROL_LIBS)
-
-AC_PATH_PROG(GCONFTOOL, gconftool-2, no)
-
-if test x"$GCONFTOOL" = xno; then
-  AC_MSG_ERROR([gconftool-2 executable was not found in your path - should be install with gconf])
+if test x"$GLIB_GENMARSHAL" = xno; then
+    AC_MSG_ERROR([glib-genmarshal executable not found in your path - should be installed with glib])
 fi
 
-AM_GCONF_SOURCE_2
+AC_SUBST(GLIB_GENMARSHAL)
+
+PKG_CHECK_MODULES(CONTROL, gtk+-3.0 libgnome-menu gio-unix-2.0 libgnome-control-center > 3.0)
+AC_SUBST(CONTROL_CFLAGS)
+AC_SUBST(CONTROL_LIBS)
 
 ## and generate the output
 @YAST2-OUTPUT@

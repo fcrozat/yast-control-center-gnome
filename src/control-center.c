@@ -1,211 +1,218 @@
 /*
- * This file is part of the Control Center.
+ * Copyright (c) 2009, 2010 Intel, Inc.
+ * Copyright (c) 2010 Red Hat, Inc.
  *
- * Copyright (c) 2006 Novell, Inc.
+ * The Control Center is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
  *
- * The Control Center is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
+ * The Control Center is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
  *
- * The Control Center is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
+ * You should have received a copy of the GNU General Public License along
+ * with the Control Center; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * You should have received a copy of the GNU General Public License along with
- * the Control Center; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * Author: Thomas Wood <thos@gnome.org>
  */
 
 #include "config.h"
 
 #include <glib/gi18n.h>
+#include <stdlib.h>
+
+#include "gnome-control-center.h"
+
 #include <gtk/gtk.h>
-#include <libgnome/gnome-desktop-item.h>
-#include <unique/unique.h>
+#include <string.h>
 
-#include <libslab/slab.h>
+#include "cc-shell-log.h"
 
-void handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data);
-static GSList *get_actions_list ();
-
-#define CONTROL_CENTER_PREFIX             "/apps/yast-control-center/cc_"
-#define CONTROL_CENTER_ACTIONS_LIST_KEY   (CONTROL_CENTER_PREFIX  "actions_list")
-#define CONTROL_CENTER_ACTIONS_SEPARATOR  ";"
-#define EXIT_SHELL_ON_STATIC_ACTION       "exit_shell_on_static_action"
-
-#define GETTEXT_PACKAGE "gnome-control-center-2.0"
-#define YAST_CC_PACKAGE "control-center"
-
-static GSList *
-get_actions_list (void)
+G_GNUC_NORETURN static gboolean
+option_version_cb (const gchar *option_name,
+                   const gchar *value,
+                   gpointer     data,
+                   GError     **error)
 {
-	GSList *l;
-	GSList *key_list;
-	GSList *actions_list = NULL;
-	AppAction *action;
-
-	key_list = get_slab_gconf_slist (CONTROL_CENTER_ACTIONS_LIST_KEY);
-	if (!key_list)
-	{
-		g_warning (_("key not found [%s]\n"), CONTROL_CENTER_ACTIONS_LIST_KEY);
-		return NULL;
-	}
-
-	for (l = key_list; l != NULL; l = l->next)
-	{
-		gchar *entry = (gchar *) l->data;
-		gchar **temp;
-
-		action = g_new (AppAction, 1);
-		temp = g_strsplit (entry, CONTROL_CENTER_ACTIONS_SEPARATOR, 2);
-		action->name = g_strdup (temp[0]);
-		if ((action->item = load_desktop_item_from_unknown (temp[1])) == NULL)
-		{
-			g_warning ("get_actions_list() - PROBLEM - Can't load %s\n", temp[1]);
-		}
-		else
-		{
-			actions_list = g_slist_prepend (actions_list, action);
-		}
-		g_strfreev (temp);
-		g_free (entry);
-	}
-
-	g_slist_free (key_list);
-
-	return g_slist_reverse (actions_list);
+  g_print ("%s %s\n", PACKAGE, VERSION);
+  exit (0);
 }
 
-void
-handle_static_action_clicked (Tile * tile, TileEvent * event, gpointer data)
+#if 0
+static char **start_panels = NULL;
+static gboolean show_overview = FALSE;
+#endif
+static gboolean verbose = FALSE;
+static gboolean show_help = FALSE;
+static gboolean show_help_gtk = FALSE;
+static gboolean show_help_all = FALSE;
+
+const GOptionEntry all_options[] = {
+  { "version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, option_version_cb, NULL, NULL },
+  { "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, N_("Enable verbose mode"), NULL },
+#if 0
+  { "overview", 'o', 0, G_OPTION_ARG_NONE, &show_overview, N_("Show the overview"), NULL },
+#endif
+  { "help", 'h', G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_NONE, &show_help, N_("Show help options"), NULL },
+  { "help-all", 0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_NONE, &show_help_all, N_("Show help options"), NULL },
+  { "help-gtk", 0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_NONE, &show_help_gtk, N_("Show help options"), NULL },
+#if 0
+  { G_OPTION_REMAINING, '\0', 0, G_OPTION_ARG_FILENAME_ARRAY, &start_panels, N_("Panel to display"), NULL },
+#endif
+  { NULL } /* end the list */
+};
+
+static int
+application_command_line_cb (GApplication  *application,
+                             GApplicationCommandLine  *command_line,
+                             GnomeControlCenter      *shell)
 {
-	gchar *temp;
-	AppShellData *app_data = (AppShellData *) data;
-	GnomeDesktopItem *item =
-		(GnomeDesktopItem *) g_object_get_data (G_OBJECT (tile), APP_ACTION_KEY);
+  int argc;
+  char **argv;
+  int retval = 0;
+  GOptionContext *context;
+  GError *error = NULL;
 
-	if (event->type == TILE_EVENT_ACTIVATED_DOUBLE_CLICK)
-		return;
-	open_desktop_item_exec (item);
+  verbose = FALSE;
+#if 0
+  show_overview = FALSE;
+#endif
+  show_help = FALSE;
+#if 0
+  start_panels = NULL;
+#endif
 
-	temp = g_strdup_printf("%s%s", app_data->gconf_prefix, EXIT_SHELL_ON_STATIC_ACTION);
-	if (get_slab_gconf_bool(temp))
-	{
-		if (app_data->exit_on_close)
-			gtk_main_quit ();
-		else
-			hide_shell (app_data);
-	}
-	g_free (temp);
+  argv = g_application_command_line_get_arguments (command_line, &argc);
+
+  context = g_option_context_new (N_("- Administrator Settings"));
+  g_option_context_add_main_entries (context, all_options, GETTEXT_PACKAGE);
+  g_option_context_set_translation_domain(context, GETTEXT_PACKAGE);
+  g_option_context_add_group (context, gtk_get_option_group (TRUE));
+  g_option_context_set_help_enabled (context, FALSE);
+
+  if (g_option_context_parse (context, &argc, &argv, &error) == FALSE)
+    {
+      g_print (_("%s\nRun '%s --help' to see a full list of available command line options.\n"),
+               error->message, argv[0]);
+      g_error_free (error);
+      g_option_context_free (context);
+      return 1;
+    }
+
+  if (show_help || show_help_all || show_help_gtk)
+    {
+      gchar *help;
+      GOptionGroup *group;
+
+      if (show_help || show_help_all)
+        group = NULL;
+      else
+        group = gtk_get_option_group (FALSE);
+
+      help = g_option_context_get_help (context, FALSE, group);
+      g_print ("%s", help);
+      g_free (help);
+      g_option_context_free (context);
+      return 0;
+    }
+
+  g_option_context_free (context);
+
+  cc_shell_log_set_debug (verbose);
+
+  gnome_control_center_show (shell, GTK_APPLICATION (application));
+
+#if 0
+  if (show_overview)
+    {
+      gnome_control_center_set_overview_page (shell);
+    }
+  else if (start_panels != NULL && start_panels[0] != NULL)
+    {
+      const char *start_id;
+      GError *err = NULL;
+
+      start_id = start_panels[0];
+
+      if (!cc_shell_set_active_panel_from_id (CC_SHELL (shell), start_id, &err))
+        {
+          g_warning ("Could not load setting panel \"%s\": %s", start_id,
+                     (err) ? err->message : "Unknown error");
+          retval = 1;
+          if (err)
+            {
+              g_error_free (err);
+              err = NULL;
+            }
+        }
+    }
+#endif
+
+  gnome_control_center_present (shell);
+  gdk_notify_startup_complete ();
+
+  g_strfreev (argv);
+#if 0
+  if (start_panels != NULL)
+    {
+      g_strfreev (start_panels);
+      start_panels = NULL;
+    }
+  show_overview = FALSE;
+#endif
+
+  return retval;
 }
 
-static UniqueResponse
-message_received_cb (UniqueApp         *app,
-		     UniqueCommand      command,
-		     UniqueMessageData *message,
-		     guint              time,
-		     gpointer           user_data)
+static void
+application_startup_cb (GApplication       *application,
+                        GnomeControlCenter *shell)
 {
-	UniqueResponse  res;
-	AppShellData   *app_data = user_data;
-
-	switch (command) {
-	case UNIQUE_ACTIVATE:
-		/* move the main window to the screen that sent us the command */
-		gtk_window_set_screen (GTK_WINDOW (app_data->main_app),
-				       unique_message_data_get_screen (message));
-		if (!app_data->main_app_window_shown_once)
-			show_shell (app_data);
-
-		gtk_window_present_with_time (GTK_WINDOW (app_data->main_app),
-					      time);
-
-		gtk_widget_grab_focus (SLAB_SECTION (app_data->filter_section)->contents);
-
-		res = UNIQUE_RESPONSE_OK;
-		break;
-	default:
-		res = UNIQUE_RESPONSE_PASSTHROUGH;
-		break;
-	}
-
-	return res;
+  /* nothing to do here, we don't want to show a window before
+   * we've looked at the commandline
+   */
 }
 
 int
-main (int argc, char *argv[])
+main (int argc, char **argv)
 {
-	gboolean hidden = FALSE;
-	UniqueApp *unique_app;
-	AppShellData *app_data;
-	GSList *actions;
-	GError *error;
-	GOptionEntry options[] = {
-	  { "hide", 0, 0, G_OPTION_ARG_NONE, &hidden, N_("Hide on start (useful to preload the shell)"), NULL },
-	  { NULL }
-	};
+  GnomeControlCenter *shell;
+  GtkApplication *application;
+  int status;
 
-#ifdef ENABLE_NLS
-	bindtextdomain (YAST_CC_PACKAGE, YASTLOCALEDIR);
-	bind_textdomain_codeset (YAST_CC_PACKAGE, "UTF-8");
-	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
-#endif
+  bindtextdomain (YAST_CC_PACKAGE, YASTLOCALEDIR);
+  bind_textdomain_codeset (YAST_CC_PACKAGE, "UTF-8");
+  bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
+  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+  textdomain (GETTEXT_PACKAGE);
 
-	error = NULL;
-	if (!gtk_init_with_args (&argc, &argv,
-				 NULL, options, GETTEXT_PACKAGE, &error)) {
-		g_printerr ("%s\n", error->message);
-		g_error_free (error);
-		return 1;
-	}
 
-	/* we don't want to use dbus as a backend for unique, since we're
-	 * running as root */
-	g_setenv ("UNIQUE_BACKEND", "bacon", TRUE);
-	unique_app = unique_app_new ("org.opensuse.yast-control-center-gnome", NULL);
-	if (unique_app_is_running (unique_app)) {
-		int retval = 0;
+  g_thread_init (NULL);
+  gtk_init (&argc, &argv);
+  cc_shell_log_init ();
 
-		if (!hidden) {
-			UniqueResponse response;
-			response = unique_app_send_message (unique_app,
-							    UNIQUE_ACTIVATE,
-							    NULL);
-			retval = (response != UNIQUE_RESPONSE_OK);
-		}
+  GtkIconTheme * theme;
+  theme = gtk_icon_theme_get_default();
+  gtk_icon_theme_prepend_search_path (theme, "/usr/share/YaST2/theme/current");
 
-		g_object_unref (unique_app);
-		return retval;
-	}
+  /* register a symbolic icon size for use in sidebar lists */
+  gtk_icon_size_register ("cc-sidebar-list", 24, 24);
 
-	GtkIconTheme * theme;
-	theme = gtk_icon_theme_get_default();
-	gtk_icon_theme_prepend_search_path (theme, "/usr/share/YaST2/theme/current");
+  shell = gnome_control_center_new ();
 
-	app_data = appshelldata_new ("YaST-gnome.menu", NULL, CONTROL_CENTER_PREFIX,
-				     GTK_ICON_SIZE_DND, FALSE, TRUE);
-	generate_categories (app_data);
+  /* enforce single instance of this application */
+  application = gtk_application_new ("org.opensuse.yast-control-center-gnome", G_APPLICATION_HANDLES_COMMAND_LINE);
+  g_signal_connect (application, "startup",
+                    G_CALLBACK (application_startup_cb), shell);
+  g_signal_connect (application, "command-line",
+                    G_CALLBACK (application_command_line_cb), shell);
 
-	actions = get_actions_list ();
-	layout_shell (app_data, _("Filter"), _("Groups"), _("Common Tasks"), actions,
-		handle_static_action_clicked);
+  status = g_application_run (G_APPLICATION (application), argc, argv);
 
-	textdomain (YAST_CC_PACKAGE);
-	create_main_window (app_data, "y2ccg-control-center", _("YaST2 Control Center"),
-		"yast", 975, 600, hidden);
-	textdomain (GETTEXT_PACKAGE);
+  g_object_unref (application);
 
-	unique_app_watch_window (unique_app, GTK_WINDOW (app_data->main_app));
-	g_signal_connect (unique_app, "message-received",
-			  G_CALLBACK (message_received_cb), app_data);
-
-	gtk_main ();
-
-	g_object_unref (unique_app);
-
-	return 0;
-};
+  return status;
+}
