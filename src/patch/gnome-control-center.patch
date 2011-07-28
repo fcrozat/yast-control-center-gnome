@@ -1,27 +1,6 @@
-commit 9515576b680d86c78f5c5e100b22c0e71e71b738
-Author: Vincent Untz <vuntz@gnome.org>
-Date:   Mon Jul 25 11:38:26 2011 +0200
-
-    shell: change to YaST shell
-
-diff --git a/shell/cc-shell-category-view.c b/shell/cc-shell-category-view.c
-index b2a5ee4..57ad8d4 100644
---- a/shell/cc-shell-category-view.c
-+++ b/shell/cc-shell-category-view.c
-@@ -20,7 +20,7 @@
- 
- #include "cc-shell-category-view.h"
- #include "cc-shell-item-view.h"
--#include "cc-shell.h"
-+#include <libgnome-control-center/cc-shell.h>
- #include "cc-shell-model.h"
- 
- G_DEFINE_TYPE (CcShellCategoryView, cc_shell_category_view, GTK_TYPE_FRAME)
-diff --git a/shell/control-center.c b/shell/control-center.c
-index 2ba41fd..09aec0f 100644
---- a/shell/control-center.c
-+++ b/shell/control-center.c
-@@ -41,8 +41,10 @@ option_version_cb (const gchar *option_name,
+--- ./patch/../cut-n-paste/shell/control-center.c	2011-07-25 12:13:00.915871481 +0200
++++ ./patch/../control-center.c	2011-07-25 11:36:40.873059970 +0200
+@@ -41,8 +41,10 @@
    exit (0);
  }
  
@@ -32,7 +11,7 @@ index 2ba41fd..09aec0f 100644
  static gboolean verbose = FALSE;
  static gboolean show_help = FALSE;
  static gboolean show_help_gtk = FALSE;
-@@ -51,11 +53,15 @@ static gboolean show_help_all = FALSE;
+@@ -51,11 +53,15 @@
  const GOptionEntry all_options[] = {
    { "version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, option_version_cb, NULL, NULL },
    { "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, N_("Enable verbose mode"), NULL },
@@ -48,7 +27,7 @@ index 2ba41fd..09aec0f 100644
    { NULL } /* end the list */
  };
  
-@@ -71,13 +77,17 @@ application_command_line_cb (GApplication  *application,
+@@ -71,13 +77,17 @@
    GError *error = NULL;
  
    verbose = FALSE;
@@ -67,7 +46,7 @@ index 2ba41fd..09aec0f 100644
    g_option_context_add_main_entries (context, all_options, GETTEXT_PACKAGE);
    g_option_context_set_translation_domain(context, GETTEXT_PACKAGE);
    g_option_context_add_group (context, gtk_get_option_group (TRUE));
-@@ -115,6 +125,7 @@ application_command_line_cb (GApplication  *application,
+@@ -115,6 +125,7 @@
  
    gnome_control_center_show (shell, GTK_APPLICATION (application));
  
@@ -75,7 +54,7 @@ index 2ba41fd..09aec0f 100644
    if (show_overview)
      {
        gnome_control_center_set_overview_page (shell);
-@@ -138,17 +149,20 @@ application_command_line_cb (GApplication  *application,
+@@ -138,17 +149,20 @@
              }
          }
      }
@@ -96,7 +75,7 @@ index 2ba41fd..09aec0f 100644
  
    return retval;
  }
-@@ -169,6 +183,8 @@ main (int argc, char **argv)
+@@ -169,6 +183,8 @@
    GtkApplication *application;
    int status;
  
@@ -105,7 +84,7 @@ index 2ba41fd..09aec0f 100644
    bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
    textdomain (GETTEXT_PACKAGE);
-@@ -178,13 +194,17 @@ main (int argc, char **argv)
+@@ -178,13 +194,17 @@
    gtk_init (&argc, &argv);
    cc_shell_log_init ();
  
@@ -124,22 +103,9 @@ index 2ba41fd..09aec0f 100644
    g_signal_connect (application, "startup",
                      G_CALLBACK (application_startup_cb), shell);
    g_signal_connect (application, "command-line",
-diff --git a/shell/gnome-control-center.c b/shell/gnome-control-center.c
-index a771282..652300b 100644
---- a/shell/gnome-control-center.c
-+++ b/shell/gnome-control-center.c
-@@ -31,8 +31,8 @@
- #define GMENU_I_KNOW_THIS_IS_UNSTABLE
- #include <gmenu-tree.h>
- 
--#include "cc-panel.h"
--#include "cc-shell.h"
-+#include <libgnome-control-center/cc-panel.h>
-+#include <libgnome-control-center/cc-shell.h>
- #include "shell-search-renderer.h"
- #include "cc-shell-category-view.h"
- #include "cc-shell-model.h"
-@@ -91,6 +91,33 @@ activate_panel (GnomeControlCenter *shell,
+--- ./patch/../cut-n-paste/shell/gnome-control-center.c	2011-07-28 11:50:46.369276534 +0200
++++ ./patch/../gnome-control-center.c	2011-07-28 12:07:12.977644709 +0200
+@@ -91,6 +91,33 @@
                  const gchar        *name,
                  const gchar        *icon_name)
  {
@@ -173,7 +139,7 @@ index a771282..652300b 100644
    GnomeControlCenterPrivate *priv = shell->priv;
    GType panel_type = G_TYPE_INVALID;
    GList *panels, *l;
-@@ -170,6 +197,7 @@ activate_panel (GnomeControlCenter *shell,
+@@ -170,6 +197,7 @@
            g_warning ("Could not find the loadable module for panel '%s'", id);
          }
      }
@@ -181,7 +147,7 @@ index a771282..652300b 100644
  }
  
  static void
-@@ -685,7 +713,7 @@ setup_model (GnomeControlCenter *shell)
+@@ -685,7 +713,7 @@
  
    priv->store = (GtkListStore *) cc_shell_model_new ();
    priv->category_views = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
@@ -190,7 +156,7 @@ index a771282..652300b 100644
  
    if (priv->menu_tree == NULL)
      {
-@@ -701,6 +729,7 @@ setup_model (GnomeControlCenter *shell)
+@@ -701,6 +729,7 @@
  static void
  load_panel_plugins (GnomeControlCenter *shell)
  {
@@ -198,7 +164,7 @@ index a771282..652300b 100644
    GList *modules;
  
    /* only allow this function to be run once to prevent modules being loaded
-@@ -719,6 +748,7 @@ load_panel_plugins (GnomeControlCenter *shell)
+@@ -719,6 +748,7 @@
    modules = g_io_modules_load_all_in_directory (PANELS_DIR);
    g_list_free (modules);
  
@@ -206,7 +172,7 @@ index a771282..652300b 100644
  }
  
  
-@@ -978,7 +1008,16 @@ on_window_size_allocate (GtkWidget          *widget,
+@@ -978,7 +1008,16 @@
            screen = gtk_widget_get_screen (widget);
            monitor = gdk_screen_get_monitor_at_window (screen, window);
            gdk_screen_get_monitor_geometry (screen, monitor, &rect);
@@ -224,10 +190,8 @@ index a771282..652300b 100644
          }
      }
    else
-diff --git a/shell/shell.ui b/shell/shell.ui
-index e63f19f..f8e0d7e 100644
---- a/shell/shell.ui
-+++ b/shell/shell.ui
+--- ./patch/../cut-n-paste/shell/shell.ui	2011-07-25 12:13:00.915871481 +0200
++++ ./patch/../shell.ui	2011-07-25 10:04:29.790594605 +0200
 @@ -3,9 +3,9 @@
    <requires lib="gtk+" version="2.16"/>
    <!-- interface-naming-policy project-wide -->

@@ -91,33 +91,6 @@ activate_panel (GnomeControlCenter *shell,
                 const gchar        *name,
                 const gchar        *icon_name)
 {
-  GDesktopAppInfo     *appinfo;
-  GdkAppLaunchContext *context;
-  GdkScreen           *screen;
-  GdkDisplay          *display;
-  GError              *error;
-
-  appinfo = g_desktop_app_info_new_from_filename (desktop_file);
-
-  screen = gtk_widget_get_screen (shell->priv->window);
-  display = gdk_screen_get_display (screen);
-  context = gdk_display_get_app_launch_context (display);
-  gdk_app_launch_context_set_screen (context, screen);
-  gdk_app_launch_context_set_timestamp (context, gtk_get_current_event_time ());
-
-  error = NULL;
-  g_app_info_launch_uris (G_APP_INFO (appinfo), NULL,
-                          (GAppLaunchContext *) context,
-                          &error);
-
-  if (error) {
-    g_printerr ("Could not launch '%s': %s\n", id, error->message);
-    g_clear_error (&error);
-  }
-
-  g_object_unref (context);
-  g_object_unref (appinfo);
-#if 0
   GnomeControlCenterPrivate *priv = shell->priv;
   GType panel_type = G_TYPE_INVALID;
   GList *panels, *l;
@@ -197,7 +170,6 @@ activate_panel (GnomeControlCenter *shell,
           g_warning ("Could not find the loadable module for panel '%s'", id);
         }
     }
-#endif
 }
 
 static void
@@ -713,7 +685,7 @@ setup_model (GnomeControlCenter *shell)
 
   priv->store = (GtkListStore *) cc_shell_model_new ();
   priv->category_views = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-  priv->menu_tree = gmenu_tree_lookup ("YaST-gnome.menu", 0);
+  priv->menu_tree = gmenu_tree_lookup (MENUDIR "/gnomecc.menu", 0);
 
   if (priv->menu_tree == NULL)
     {
@@ -729,7 +701,6 @@ setup_model (GnomeControlCenter *shell)
 static void
 load_panel_plugins (GnomeControlCenter *shell)
 {
-#if 0
   GList *modules;
 
   /* only allow this function to be run once to prevent modules being loaded
@@ -748,7 +719,6 @@ load_panel_plugins (GnomeControlCenter *shell)
   modules = g_io_modules_load_all_in_directory (PANELS_DIR);
   g_list_free (modules);
 
-#endif
 }
 
 
@@ -1008,16 +978,7 @@ on_window_size_allocate (GtkWidget          *widget,
           screen = gtk_widget_get_screen (widget);
           monitor = gdk_screen_get_monitor_at_window (screen, window);
           gdk_screen_get_monitor_geometry (screen, monitor, &rect);
-          height = (rect.height * 3) / 5;
-        } else {
-          int          monitor;
-          GdkScreen   *screen;
-          GdkRectangle rect;
-
-          screen = gdk_screen_get_default ();
-          monitor = gdk_screen_get_primary_monitor (screen);
-          gdk_screen_get_monitor_geometry (screen, monitor, &rect);
-          height = (rect.height * 3) / 5;
+          height = MIN (height + 10, rect.height - 120);
         }
     }
   else

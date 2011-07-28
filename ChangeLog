@@ -1,3 +1,21 @@
+2011-07-28  Vincent Untz  <vuntz@gnome.org>
+
+	Release 2.21.1
+
+	Use an internal copy of the libgnome-control-center code since it is
+	going private upstream.
+
+	* VERSION: bump version.
+	* src/cut-n-paste/libgnome-control-center/: internal copy of the
+	libgnome-control-center code.
+	* src/cut-n-paste/shell/: copy of the unpatched shell code fro
+	gnome-control-center. We build a static library without the code we're
+	going to patch. This will make it easier to update to new upstream code
+	later on since we'll simply copy the new code there.
+	* src/{*.[ch],shell.ui}: simply keep the code we patch here.
+	* src/patch/: move gnome-control-center.patch patch there, and add a
+	update-patch.sh script to easily update the patch file.
+
 2011-07-25  Vincent Untz  <vuntz@gnome.org>
 
 	Release 2.21.0

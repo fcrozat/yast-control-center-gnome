@@ -1,4 +1,11 @@
-INCLUDES = $(CONTROL_CFLAGS)
+SUBDIRS = cut-n-paste
+
+INCLUDES = 						\
+	$(CONTROL_CFLAGS)				\
+	-I$(srcdir)/cut-n-paste				\
+	-I$(srcdir)/cut-n-paste/libgnome-control-center	\
+	-I$(srcdir)/cut-n-paste/shell			\
+	-I$(top_builddir)/src/cut-n-paste/shell
 
 AM_CPPFLAGS =							\
 	-DGETTEXT_PACKAGE="\"gnome-control-center-2.0\""	\
@@ -9,36 +16,17 @@ AM_CPPFLAGS =							\
 
 ybin_PROGRAMS = y2controlcenter-gnome
 
-MARSHAL_FILES = cc-shell-marshal.c cc-shell-marshal.h
-BUILT_SOURCES = $(MARSHAL_FILES)
+y2controlcenter_gnome_SOURCES = 	\
+	control-center.c                \
+	gnome-control-center.c
 
-cc-shell-marshal.h: cc-shell-marshal.list
-	$(AM_V_GEN) $(GLIB_GENMARSHAL) --prefix=cc_shell_marshal $< --header > $@
-
-cc-shell-marshal.c: cc-shell-marshal.list
-	$(AM_V_GEN) $(GLIB_GENMARSHAL) --prefix=cc_shell_marshal $< --body --header > $@
-
-y2controlcenter_gnome_SOURCES = 		\
-	control-center.c                        \
-	cc-shell-log.c                          \
-	cc-shell-log.h                          \
-	gnome-control-center.c                  \
-	gnome-control-center.h                  \
-	shell-search-renderer.c                 \
-	shell-search-renderer.h                 \
-	cc-shell-category-view.c                \
-	cc-shell-category-view.h                \
-	cc-shell-item-view.c                    \
-	cc-shell-item-view.h                    \
-	cc-shell-model.c                        \
-	cc-shell-model.h                        \
-	$(MARSHAL_FILES)
-
-y2controlcenter_gnome_LDADD = $(CONTROL_LIBS)
+y2controlcenter_gnome_LDADD = 	\
+	$(top_builddir)/src/cut-n-paste/libgnome-control-center/libgnome-control-center.la	\
+	$(top_builddir)/src/cut-n-paste/shell/libshell-unpatched.la				\
+	$(CONTROL_LIBS)
 
 uidir = $(pkgdatadir)/ui
 ui_DATA = shell.ui
 
 EXTRA_DIST = 			\
-	$(ui_DATA)		\
-	cc-shell-marshal.list
+	$(ui_DATA)
