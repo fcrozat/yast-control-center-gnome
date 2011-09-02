@@ -18,7 +18,8 @@ ybin_PROGRAMS = y2controlcenter-gnome
 
 y2controlcenter_gnome_SOURCES = 	\
 	control-center.c                \
-	gnome-control-center.c
+	gnome-control-center.c		\
+	shell-search-renderer.c
 
 y2controlcenter_gnome_LDADD = 	\
 	$(top_builddir)/src/cut-n-paste/libgnome-control-center/libgnome-control-center.la	\

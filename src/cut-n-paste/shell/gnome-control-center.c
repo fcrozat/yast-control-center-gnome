@@ -84,12 +84,34 @@ struct _GnomeControlCenterPrivate
 #define FIXED_WIDTH 675
 
 
+static const gchar *
+get_icon_name_from_g_icon (GIcon *gicon)
+{
+  const gchar * const *names;
+  GtkIconTheme *icon_theme;
+  int i;
+
+  if (!G_IS_THEMED_ICON (gicon))
+    return NULL;
+
+  names = g_themed_icon_get_names (G_THEMED_ICON (gicon));
+  icon_theme = gtk_icon_theme_get_default ();
+
+  for (i = 0; names[i] != NULL; i++)
+    {
+      if (gtk_icon_theme_has_icon (icon_theme, names[i]))
+        return names[i];
+    }
+
+  return NULL;
+}
+
 static void
 activate_panel (GnomeControlCenter *shell,
                 const gchar        *id,
                 const gchar        *desktop_file,
                 const gchar        *name,
-                const gchar        *icon_name)
+                GIcon              *gicon)
 {
   GnomeControlCenterPrivate *priv = shell->priv;
   GType panel_type = G_TYPE_INVALID;
@@ -126,6 +148,7 @@ activate_panel (GnomeControlCenter *shell,
           GtkWidget *box;
           gint i;
           int nat_height;
+          const gchar *icon_name;
 
           /* create the panel plugin */
           panel = g_object_new (panel_type, "shell", shell, NULL);
@@ -146,6 +169,7 @@ activate_panel (GnomeControlCenter *shell,
           gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), i);
 
           /* set the title of the window */
+          icon_name = get_icon_name_from_g_icon (gicon);
           gtk_window_set_title (GTK_WINDOW (priv->window), name);
           gtk_window_set_default_icon_name (icon_name);
           gtk_window_set_icon_name (GTK_WINDOW (priv->window), icon_name);
@@ -374,28 +398,38 @@ model_filter_func (GtkTreeModel              *model,
                    GtkTreeIter               *iter,
                    GnomeControlCenterPrivate *priv)
 {
-  gchar *name, *target;
+  gchar *name, *description;
   gchar *needle, *haystack;
   gboolean result;
   gchar **keywords;
 
-  gtk_tree_model_get (model, iter, COL_NAME, &name,
-                      COL_SEARCH_TARGET, &target,
+  gtk_tree_model_get (model, iter,
+                      COL_NAME, &name,
+                      COL_DESCRIPTION, &description,
                       COL_KEYWORDS, &keywords,
                       -1);
 
-  if (!priv->filter_string || !name || !target)
+  if (!priv->filter_string || !name)
     {
       g_free (name);
-      g_free (target);
+      g_free (description);
       g_strfreev (keywords);
       return FALSE;
     }
 
   needle = g_utf8_casefold (priv->filter_string, -1);
-  haystack = g_utf8_casefold (target, -1);
+  haystack = g_utf8_casefold (name, -1);
 
   result = (strstr (haystack, needle) != NULL);
+
+  if (!result && description)
+    {
+      gchar *folded;
+
+      folded = g_utf8_casefold (description, -1);
+      result = (strstr (folded, needle) != NULL);
+      g_free (folded);
+    }
 
   if (!result && keywords)
     {
@@ -411,7 +445,6 @@ model_filter_func (GtkTreeModel              *model,
     }
 
   g_free (name);
-  g_free (target);
   g_free (haystack);
   g_free (needle);
   g_strfreev (keywords);
@@ -557,7 +590,7 @@ setup_search (GnomeControlCenter *shell)
                                  "title", COL_NAME);
   gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT (search_view),
                                  priv->search_renderer,
-                                 "search-target", COL_SEARCH_TARGET);
+                                 "search-target", COL_DESCRIPTION);
 
   /* connect the activated signal */
   g_signal_connect (search_view, "desktop-item-activated",
@@ -627,43 +660,57 @@ maybe_add_category_view (GnomeControlCenter *shell,
 static void
 reload_menu (GnomeControlCenter *shell)
 {
-  GSList *list, *l;
+  GError *error;
   GMenuTreeDirectory *d;
+  GMenuTreeIter *iter;
+  GMenuTreeItemType next_type;
+
+  error = NULL;
+  if (!gmenu_tree_load_sync (shell->priv->menu_tree, &error))
+    {
+      g_warning ("Could not load control center menu: %s", error->message);
+      g_clear_error (&error);
+      return;
+    }
+
 
   d = gmenu_tree_get_root_directory (shell->priv->menu_tree);
-  list = gmenu_tree_directory_get_contents (d);
+  iter = gmenu_tree_directory_iter (d);
 
-  for (l = list; l; l = l->next)
+  while ((next_type = gmenu_tree_iter_next (iter)) != GMENU_TREE_ITEM_INVALID)
     {
-      GMenuTreeItemType type;
-      type = gmenu_tree_item_get_type (l->data);
-
-      if (type == GMENU_TREE_ITEM_DIRECTORY)
+      if (next_type == GMENU_TREE_ITEM_DIRECTORY)
         {
-          GSList *contents, *f;
+          GMenuTreeDirectory *subdir;
           const gchar *dir_name;
+          GMenuTreeIter *sub_iter;
+          GMenuTreeItemType sub_next_type;
 
-          contents = gmenu_tree_directory_get_contents (l->data);
-          dir_name = gmenu_tree_directory_get_name (l->data);
+          subdir = gmenu_tree_iter_get_directory (iter);
+          dir_name = gmenu_tree_directory_get_name (subdir);
 
           maybe_add_category_view (shell, dir_name);
 
           /* add the items from this category to the model */
-          for (f = contents; f; f = f->next)
+          sub_iter = gmenu_tree_directory_iter (subdir);
+          while ((sub_next_type = gmenu_tree_iter_next (sub_iter)) != GMENU_TREE_ITEM_INVALID)
             {
-              if (gmenu_tree_item_get_type (f->data) == GMENU_TREE_ITEM_ENTRY)
+              if (sub_next_type == GMENU_TREE_ITEM_ENTRY)
                 {
+                  GMenuTreeEntry *item = gmenu_tree_iter_get_entry (sub_iter);
                   cc_shell_model_add_item (CC_SHELL_MODEL (shell->priv->store),
                                            dir_name,
-                                           f->data);
+                                           item);
+                  gmenu_tree_item_unref (item);
                 }
             }
 
-          g_slist_free (contents);
+          gmenu_tree_iter_unref (sub_iter);
+          gmenu_tree_item_unref (subdir);
         }
     }
 
-  g_slist_free (list);
+  gmenu_tree_iter_unref (iter);
 }
 
 static void
@@ -685,17 +732,11 @@ setup_model (GnomeControlCenter *shell)
 
   priv->store = (GtkListStore *) cc_shell_model_new ();
   priv->category_views = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-  priv->menu_tree = gmenu_tree_lookup (MENUDIR "/gnomecc.menu", 0);
-
-  if (priv->menu_tree == NULL)
-    {
-      g_warning ("Could not find control center menu");
-      return;
-    }
+  priv->menu_tree = gmenu_tree_new_for_path (MENUDIR "/gnomecc.menu", 0);
 
   reload_menu (shell);
 
-  gmenu_tree_add_monitor (priv->menu_tree, (GMenuTreeChangedFunc)on_menu_changed, shell);
+  g_signal_connect (priv->menu_tree, "changed", G_CALLBACK (on_menu_changed), shell);
 }
 
 static void
@@ -759,7 +800,8 @@ _shell_set_active_panel_from_id (CcShell      *shell,
   GtkTreeIter iter;
   gboolean iter_valid;
   gchar *name = NULL;
-  gchar *desktop, *icon_name;
+  gchar *desktop;
+  GIcon *gicon;
   GnomeControlCenterPrivate *priv = GNOME_CONTROL_CENTER (shell)->priv;
 
 
@@ -774,7 +816,7 @@ _shell_set_active_panel_from_id (CcShell      *shell,
       gtk_tree_model_get (GTK_TREE_MODEL (priv->store), &iter,
                           COL_NAME, &name,
                           COL_DESKTOP_FILE, &desktop,
-                          COL_ICON_NAME, &icon_name,
+                          COL_GICON, &gicon,
                           COL_ID, &id,
                           -1);
 
@@ -788,7 +830,8 @@ _shell_set_active_panel_from_id (CcShell      *shell,
           g_free (id);
           g_free (name);
           g_free (desktop);
-          g_free (icon_name);
+	  if (gicon)
+	    g_object_unref (gicon);
 
           name = NULL;
           id = NULL;
@@ -808,11 +851,12 @@ _shell_set_active_panel_from_id (CcShell      *shell,
       gtk_notebook_remove_page (GTK_NOTEBOOK (priv->notebook), CAPPLET_PAGE);
 
       activate_panel (GNOME_CONTROL_CENTER (shell), start_id, desktop, name,
-                      icon_name);
+                      gicon);
 
       g_free (name);
       g_free (desktop);
-      g_free (icon_name);
+      if (gicon)
+	g_object_unref (gicon);
 
       return TRUE;
     }
@@ -915,8 +959,9 @@ gnome_control_center_finalize (GObject *object)
 
   if (priv->menu_tree)
     {
-      gmenu_tree_remove_monitor (priv->menu_tree, (GMenuTreeChangedFunc)on_menu_changed, object);
-      gmenu_tree_unref (priv->menu_tree);
+      g_signal_handlers_disconnect_by_func (priv->menu_tree,
+					    G_CALLBACK (on_menu_changed), object);
+      g_object_unref (priv->menu_tree);
     }
 
   if (priv->category_views)
@@ -1038,6 +1083,11 @@ window_key_press_event (GtkWidget          *win,
           case GDK_KEY_f:
           case GDK_KEY_F:
             gtk_widget_grab_focus (self->priv->search_entry);
+            retval = TRUE;
+            break;
+          case GDK_KEY_Q:
+          case GDK_KEY_q:
+            g_object_unref (self);
             retval = TRUE;
             break;
         }

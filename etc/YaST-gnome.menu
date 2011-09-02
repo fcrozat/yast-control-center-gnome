@@ -84,4 +84,18 @@
 		</Include>
 	</Menu>
 	<DefaultMergeDirs/>
+
+   <Layout>
+     <Menuname>Software</Menuname>
+     <Menuname>Hardware</Menuname>
+     <Menuname>System</Menuname>
+     <Menuname>Network Devices</Menuname>
+     <Menuname>Network Services</Menuname>
+     <Menuname>AppArmor</Menuname>
+     <Menuname>Security</Menuname>
+     <Menuname>Virtualization</Menuname>
+     <Menuname>High Availability</Menuname>
+     <Menuname>Misc</Menuname>
+     <Merge type="all" />
+   </Layout>
 </Menu>

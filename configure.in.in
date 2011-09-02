@@ -19,7 +19,7 @@ fi
 
 AC_SUBST(GLIB_GENMARSHAL)
 
-PKG_CHECK_MODULES(CONTROL, gtk+-3.0 libgnome-menu gio-unix-2.0)
+PKG_CHECK_MODULES(CONTROL, gtk+-3.0 libgnome-menu-3.0 gio-unix-2.0)
 AC_SUBST(CONTROL_CFLAGS)
 AC_SUBST(CONTROL_LIBS)
 

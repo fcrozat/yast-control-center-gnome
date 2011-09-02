@@ -1,6 +1,16 @@
---- ./patch/../cut-n-paste/shell/control-center.c	2011-07-25 12:13:00.915871481 +0200
-+++ ./patch/../control-center.c	2011-07-25 11:36:40.873059970 +0200
-@@ -41,8 +41,10 @@
+--- ./patch/../cut-n-paste/shell/control-center.c	2011-09-02 15:37:12.959904219 +0200
++++ ./patch/../control-center.c	2011-09-02 15:37:53.787529299 +0200
+@@ -28,7 +28,9 @@
+ 
+ #include <gtk/gtk.h>
+ #include <string.h>
++#if 0
+ #include <libnotify/notify.h>
++#endif
+ 
+ #include "cc-shell-log.h"
+ 
+@@ -42,8 +44,10 @@
    exit (0);
  }
  
@@ -11,7 +21,7 @@
  static gboolean verbose = FALSE;
  static gboolean show_help = FALSE;
  static gboolean show_help_gtk = FALSE;
-@@ -51,11 +53,15 @@
+@@ -52,11 +56,15 @@
  const GOptionEntry all_options[] = {
    { "version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, option_version_cb, NULL, NULL },
    { "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, N_("Enable verbose mode"), NULL },
@@ -27,7 +37,7 @@
    { NULL } /* end the list */
  };
  
-@@ -71,13 +77,17 @@
+@@ -72,13 +80,17 @@
    GError *error = NULL;
  
    verbose = FALSE;
@@ -46,7 +56,7 @@
    g_option_context_add_main_entries (context, all_options, GETTEXT_PACKAGE);
    g_option_context_set_translation_domain(context, GETTEXT_PACKAGE);
    g_option_context_add_group (context, gtk_get_option_group (TRUE));
-@@ -115,6 +125,7 @@
+@@ -116,6 +128,7 @@
  
    gnome_control_center_show (shell, GTK_APPLICATION (application));
  
@@ -54,7 +64,7 @@
    if (show_overview)
      {
        gnome_control_center_set_overview_page (shell);
-@@ -138,17 +149,20 @@
+@@ -139,17 +152,20 @@
              }
          }
      }
@@ -75,7 +85,7 @@
  
    return retval;
  }
-@@ -169,6 +183,8 @@
+@@ -170,6 +186,8 @@
    GtkApplication *application;
    int status;
  
@@ -84,7 +94,7 @@
    bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
    textdomain (GETTEXT_PACKAGE);
-@@ -178,13 +194,17 @@
+@@ -179,15 +197,21 @@
    gtk_init (&argc, &argv);
    cc_shell_log_init ();
  
@@ -95,6 +105,10 @@
    /* register a symbolic icon size for use in sidebar lists */
    gtk_icon_size_register ("cc-sidebar-list", 24, 24);
  
++#if 0
+   notify_init ("gnome-control-center");
++#endif
+ 
    shell = gnome_control_center_new ();
  
    /* enforce single instance of this application */
@@ -103,11 +117,27 @@
    g_signal_connect (application, "startup",
                      G_CALLBACK (application_startup_cb), shell);
    g_signal_connect (application, "command-line",
---- ./patch/../cut-n-paste/shell/gnome-control-center.c	2011-07-28 11:50:46.369276534 +0200
-+++ ./patch/../gnome-control-center.c	2011-07-28 12:07:12.977644709 +0200
-@@ -91,6 +91,33 @@
+--- ./patch/../cut-n-paste/shell/gnome-control-center.c	2011-09-02 15:53:29.624723757 +0200
++++ ./patch/../gnome-control-center.c	2011-09-02 16:02:55.176284577 +0200
+@@ -84,6 +84,7 @@
+ #define FIXED_WIDTH 675
+ 
+ 
++#if 0
+ static const gchar *
+ get_icon_name_from_g_icon (GIcon *gicon)
+ {
+@@ -105,6 +106,7 @@
+ 
+   return NULL;
+ }
++#endif
+ 
+ static void
+ activate_panel (GnomeControlCenter *shell,
+@@ -113,6 +115,33 @@
                  const gchar        *name,
-                 const gchar        *icon_name)
+                 GIcon              *gicon)
  {
 +  GDesktopAppInfo     *appinfo;
 +  GdkAppLaunchContext *context;
@@ -139,7 +169,7 @@
    GnomeControlCenterPrivate *priv = shell->priv;
    GType panel_type = G_TYPE_INVALID;
    GList *panels, *l;
-@@ -170,6 +197,7 @@
+@@ -194,6 +223,7 @@
            g_warning ("Could not find the loadable module for panel '%s'", id);
          }
      }
@@ -147,16 +177,16 @@
  }
  
  static void
-@@ -685,7 +713,7 @@
+@@ -732,7 +762,7 @@
  
    priv->store = (GtkListStore *) cc_shell_model_new ();
    priv->category_views = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
--  priv->menu_tree = gmenu_tree_lookup (MENUDIR "/gnomecc.menu", 0);
-+  priv->menu_tree = gmenu_tree_lookup ("YaST-gnome.menu", 0);
+-  priv->menu_tree = gmenu_tree_new_for_path (MENUDIR "/gnomecc.menu", 0);
++  priv->menu_tree = gmenu_tree_new ("YaST-gnome.menu", 0);
  
-   if (priv->menu_tree == NULL)
-     {
-@@ -701,6 +729,7 @@
+   reload_menu (shell);
+ 
+@@ -742,6 +772,7 @@
  static void
  load_panel_plugins (GnomeControlCenter *shell)
  {
@@ -164,7 +194,7 @@
    GList *modules;
  
    /* only allow this function to be run once to prevent modules being loaded
-@@ -719,6 +748,7 @@
+@@ -760,6 +791,7 @@
    modules = g_io_modules_load_all_in_directory (PANELS_DIR);
    g_list_free (modules);
  
@@ -172,7 +202,7 @@
  }
  
  
-@@ -978,7 +1008,16 @@
+@@ -1023,7 +1055,16 @@
            screen = gtk_widget_get_screen (widget);
            monitor = gdk_screen_get_monitor_at_window (screen, window);
            gdk_screen_get_monitor_geometry (screen, monitor, &rect);
@@ -190,6 +220,21 @@
          }
      }
    else
+--- ./patch/../cut-n-paste/shell/shell-search-renderer.c	2011-09-02 16:14:13.066818949 +0200
++++ ./patch/../shell-search-renderer.c	2011-09-02 16:16:56.262269091 +0200
+@@ -154,7 +154,11 @@
+     needle = g_utf8_casefold (priv->search_string, -1);
+   else
+     needle = NULL;
+-  haystack = g_utf8_casefold (full_string, -1);
++  /* Fix crash caused by empty comments in yast .desktop files */
++  if (full_string)
++    haystack = g_utf8_casefold (full_string, -1);
++  else
++    haystack = g_strdup ("");
+ 
+   /* clear any previous attributes */
+   pango_layout_set_attributes (priv->layout, NULL);
 --- ./patch/../cut-n-paste/shell/shell.ui	2011-07-25 12:13:00.915871481 +0200
 +++ ./patch/../shell.ui	2011-07-25 10:04:29.790594605 +0200
 @@ -3,9 +3,9 @@

@@ -1,3 +1,20 @@
+2011-09-02  Vincent Untz  <vuntz@gnome.org>
+
+	Release 2.21.2
+
+	Update to gnome-control-center code as of today. This includes a port
+	to new gnome-menus API.
+
+	* VERSION: bump version.
+	* configure.in.in: look for libgnome-menu-3.0 instead of libgnome-menu.
+	* etc/YaST-gnome.menu: add Layout node to  force the layout we want,
+	instead of relying on alphabetical order.
+	* src/cut-n-paste/: update code from gnome-control-center.
+	* src/{control-center.c,gnome-control-center.c}: rebase on updated code.
+	* src/shell-search-renderer.c: tweak this source file to avoid a crash
+	caused by the fact that yast .desktop files have no Comment key.
+	* src/patch/: update patch to current changes.
+
 2011-07-28  Vincent Untz  <vuntz@gnome.org>
 
 	Release 2.21.1
