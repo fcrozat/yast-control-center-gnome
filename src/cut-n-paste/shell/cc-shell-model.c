@@ -24,7 +24,7 @@
 
 #define GNOME_SETTINGS_PANEL_ID_KEY "X-GNOME-Settings-Panel"
 #define GNOME_SETTINGS_PANEL_CATEGORY GNOME_SETTINGS_PANEL_ID_KEY
-#define GNOME_SETTINGS_PANEL_ID_KEYWORDS "X-GNOME-Keywords"
+#define GNOME_SETTINGS_PANEL_ID_KEYWORDS "Keywords"
 
 
 G_DEFINE_TYPE (CcShellModel, cc_shell_model, GTK_TYPE_LIST_STORE)
@@ -34,7 +34,7 @@ load_pixbuf_for_gicon (GIcon *icon)
 {
   GtkIconTheme *theme;
   GtkIconInfo *icon_info;
-  GdkPixbuf *pixbuf;
+  GdkPixbuf *pixbuf = NULL;
   GError *err = NULL;
 
   if (icon == NULL)

@@ -184,6 +184,7 @@ cc_shell_set_active_panel (CcShell *shell,
 gboolean
 cc_shell_set_active_panel_from_id (CcShell      *shell,
                                    const gchar  *id,
+                                   const gchar **argv,
                                    GError      **error)
 {
   CcShellClass *class;
@@ -202,7 +203,7 @@ cc_shell_set_active_panel_from_id (CcShell      *shell,
     }
   else
     {
-      return class->set_active_panel_from_id (shell, id, error);
+      return class->set_active_panel_from_id (shell, id, argv, error);
     }
 }
 
@@ -235,3 +236,24 @@ cc_shell_get_toplevel (CcShell *shell)
   return NULL;
 }
 
+void
+cc_shell_embed_widget_in_header (CcShell *shell, GtkWidget *widget)
+{
+  CcShellClass *class;
+
+  g_return_if_fail (CC_IS_SHELL (shell));
+
+  class = (CcShellClass *) G_OBJECT_GET_CLASS (shell);
+
+  if (!class->embed_widget_in_header)
+    {
+      g_warning ("Object of type \"%s\" does not implement required virtual"
+                 " function \"embed_widget_in_header\",",
+                 G_OBJECT_TYPE_NAME (shell));
+      return FALSE;
+    }
+  else
+    {
+      return class->embed_widget_in_header (shell, widget);
+    }
+}

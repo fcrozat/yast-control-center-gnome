@@ -2,8 +2,7 @@ noinst_LTLIBRARIES = libshell-unpatched.la
 
 INCLUDES = 							\
 	$(CONTROL_CFLAGS)					\
-	-I$(top_srcdir)/src					\
-	-I$(top_srcdir)/src/cut-n-paste/libgnome-control-center
+	-I$(top_srcdir)/src
 
 MARSHAL_FILES = cc-shell-marshal.c cc-shell-marshal.h
 BUILT_SOURCES = $(MARSHAL_FILES)
@@ -18,6 +17,7 @@ libshell_unpatched_la_SOURCES =			\
 	cc-shell-log.c				\
 	cc-shell-log.h				\
 	gnome-control-center.h			\
+	shell-search-renderer.c			\
 	shell-search-renderer.h			\
 	cc-shell-category-view.c		\
 	cc-shell-category-view.h		\
@@ -25,6 +25,12 @@ libshell_unpatched_la_SOURCES =			\
 	cc-shell-item-view.h			\
 	cc-shell-model.c			\
 	cc-shell-model.h			\
+        cc-editable-entry.c			\
+        cc-editable-entry.h			\
+        cc-panel.c				\
+        cc-panel.h				\
+        cc-shell.c				\
+        cc-shell.h				\
 	$(MARSHAL_FILES)
 
 EXTRA_DIST =					\

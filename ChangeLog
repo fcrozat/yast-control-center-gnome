@@ -1,3 +1,17 @@
+2012-01-11  Vincent Untz  <vuntz@gnome.org>
+
+	Release 2.21.3
+
+	Update to gnome-control-center code as of today. This reduces our patch
+	since many non-yast related changes are upstream now.
+
+	* VERSION: bump version.
+	* configure.in.in: we require glib >= 2.31.0
+	* src/cut-n-paste/: update code from gnome-control-center.
+	* src/{control-center.c,gnome-control-center.c,shell.ui}: rebase on
+	updated code.
+	* src/patch/: update patch to current changes.
+
 2011-09-02  Vincent Untz  <vuntz@gnome.org>
 
 	Release 2.21.2

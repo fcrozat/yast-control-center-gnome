@@ -3,7 +3,6 @@ SUBDIRS = cut-n-paste
 INCLUDES = 						\
 	$(CONTROL_CFLAGS)				\
 	-I$(srcdir)/cut-n-paste				\
-	-I$(srcdir)/cut-n-paste/libgnome-control-center	\
 	-I$(srcdir)/cut-n-paste/shell			\
 	-I$(top_builddir)/src/cut-n-paste/shell
 
@@ -18,11 +17,9 @@ ybin_PROGRAMS = y2controlcenter-gnome
 
 y2controlcenter_gnome_SOURCES = 	\
 	control-center.c                \
-	gnome-control-center.c		\
-	shell-search-renderer.c
+	gnome-control-center.c
 
 y2controlcenter_gnome_LDADD = 	\
-	$(top_builddir)/src/cut-n-paste/libgnome-control-center/libgnome-control-center.la	\
 	$(top_builddir)/src/cut-n-paste/shell/libshell-unpatched.la				\
 	$(CONTROL_LIBS)
 

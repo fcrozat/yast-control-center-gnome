@@ -1,1 +1,1 @@
-SUBDIRS = libgnome-control-center shell
+SUBDIRS = shell
